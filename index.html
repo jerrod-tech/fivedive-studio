@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Five & Dive · Event Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --red: #c8102e;
+    --dark-red: #8b0000;
+    --gold: #f0a500;
+    --bg: #0d0d0d;
+    --bg2: #1a1a1a;
+    --bg3: #242424;
+    --text: #f0ebe3;
+    --muted: #888;
+    --border: #333;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(180deg, #1a0005 0%, var(--bg) 100%);
+    border-bottom: 2px solid var(--red);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .logo span { color: var(--red); }
+  .header-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 2px;
+  }
+  .divider { width: 1px; height: 48px; background: var(--border); margin: 0 8px; }
+  .header-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* LAYOUT */
+  .main { display: grid; grid-template-columns: 380px 1fr; min-height: calc(100vh - 90px); }
+  
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 28px 24px;
+    overflow-y: auto;
+  }
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after { content:''; flex:1; height:1px; background: var(--border); }
+
+  .field-group { margin-bottom: 20px; }
+  label {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  input, select, textarea {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.95rem;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--red); }
+  select option { background: var(--bg3); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  
+  /* Quick presets */
+  .preset-grid { display: flex; flex-direction: column; gap: 8px; }
+  .preset-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 10px 14px;
+    text-align: left;
+    transition: all 0.15s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .preset-btn:hover { border-color: var(--red); background: #2a0008; color: var(--text); }
+  .preset-btn .dates { color: var(--gold); font-size: 0.8rem; font-weight: 400; }
+
+  .generate-btn {
+    width: 100%;
+    background: var(--red);
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 3px;
+    padding: 14px;
+    transition: background 0.2s;
+    margin-top: 8px;
+  }
+  .generate-btn:hover { background: #a00020; }
+  .generate-btn:disabled { background: #555; cursor: not-allowed; }
+
+  /* OUTPUT */
+  .output-panel {
+    padding: 32px;
+    overflow-y: auto;
+  }
+  .output-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 16px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .output-empty svg { opacity: 0.2; }
+  .output-empty p { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; }
+
+  /* RESULT CARD */
+  .result-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    animation: fadeUp 0.4s ease;
+  }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  
+  .result-header {
+    background: linear-gradient(135deg, #1a0005 0%, var(--bg3) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .result-band {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+  .result-dates {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .result-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+
+  .thumbnail-section {
+    padding: 20px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  /* THUMBNAIL CANVAS */
+  #thumbnailCanvas { display: none; }
+  .thumbnail-preview {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: #111;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .thumbnail-preview img { width: 100%; height: 100%; object-fit: cover; }
+  .thumb-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(139,0,0,0.85) 0%, rgba(13,13,13,0.7) 60%, rgba(0,0,0,0.9) 100%);
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 12px 14px;
+  }
+  .thumb-band {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.1rem, 3vw, 1.8rem);
+    letter-spacing: 2px;
+    line-height: 1;
+    color: #fff;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.9);
+  }
+  .thumb-date {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .thumb-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 2px;
+  }
+  .thumb-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 2px;
+  }
+  .thumb-badge {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: var(--red);
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .dl-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .dl-btn {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    text-align: center;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: block;
+  }
+  .dl-btn:hover { border-color: var(--red); color: var(--red); }
+  .dl-btn.primary { background: var(--red); border-color: var(--red); color: #fff; }
+  .dl-btn.primary:hover { background: #a00020; }
+
+  /* WRITEUP */
+  .writeup-section { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .writeup-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    padding: 14px;
+    white-space: pre-wrap;
+    min-height: 120px;
+    flex: 1;
+  }
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    transition: all 0.15s;
+    align-self: flex-end;
+  }
+  .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .copy-btn.copied { border-color: #4caf50; color: #4caf50; }
+
+  /* LOADER */
+  .loader {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;
+    padding: 12px 0;
+  }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ALL EVENTS BATCH */
+  .batch-bar {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .batch-bar p {
+    flex: 1;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+  .batch-btn {
+    background: var(--gold);
+    border: none;
+    border-radius: 4px;
+    color: #000;
+    cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    padding: 10px 20px;
+    transition: background 0.2s;
+  }
+  .batch-btn:hover { background: #d49200; }
+  .batch-btn:disabled { background: #555; color: #999; cursor: not-allowed; }
+
+  /* HIDDEN CANVAS FOR PNG GENERATION */
+  canvas { display: none; }
+  
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    .result-body { grid-template-columns: 1fr; }
+    .thumbnail-section { border-right: none; border-bottom: 1px solid var(--border); }
+    .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+
+  /* ── API KEY BANNER ───────────────────────────────── */
+  .api-banner {
+    background: linear-gradient(135deg, #1a0a00 0%, #1a0005 100%);
+    border-bottom: 2px solid var(--gold);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .api-banner-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .api-banner-text { flex: 1; }
+  .api-banner-text strong {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .api-banner-text span {
+    font-size: 0.82rem;
+    color: #aaa;
+  }
+  .api-banner-btn {
+    background: var(--gold);
+    border: none;
+    border-radius: 4px;
+    color: #000;
+    cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    padding: 10px 20px;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .api-banner-btn:hover { background: #d49200; }
+  .api-key-status {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .api-key-status.ok { color: #4caf50; border-color: #2a5c2a; background: #0d1f0d; }
+  .api-key-status.missing { color: var(--gold); border-color: #5c4500; background: #1a1200; animation: pulse-border 2s ease-in-out infinite; }
+  @keyframes pulse-border {
+    0%, 100% { border-color: #5c4500; }
+    50% { border-color: var(--gold); }
+  }
+
+  /* ── API KEY MODAL ────────────────────────────────── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal {
+    background: #141416;
+    border: 1px solid #333;
+    border-top: 3px solid var(--gold);
+    border-radius: 10px;
+    max-width: 620px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 32px;
+    position: relative;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    background: none; border: none; color: #666; cursor: pointer;
+    font-size: 1.4rem; line-height: 1; padding: 4px 8px;
+    transition: color 0.15s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .modal-subtitle {
+    font-size: 0.82rem;
+    color: #888;
+    margin-bottom: 24px;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  /* Steps */
+  .steps { display: flex; flex-direction: column; gap: 0; margin-bottom: 28px; }
+  .step {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid #222;
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    background: var(--red);
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content strong {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .step-content p { font-size: 0.85rem; color: #aaa; line-height: 1.55; }
+  .step-content a { color: var(--gold); text-decoration: none; }
+  .step-content a:hover { text-decoration: underline; }
+  .step-content .code-inline {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 3px;
+    color: #e8b341;
+    font-family: monospace;
+    font-size: 0.78rem;
+    padding: 1px 6px;
+    word-break: break-all;
+  }
+  .step-img {
+    background: #1a1a1a;
+    border: 1px dashed #333;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: #666;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Key input area */
+  .key-input-area { margin-top: 4px; }
+  .key-input-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .key-input-row { display: flex; gap: 8px; }
+  .key-input-row input {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: var(--text);
+    font-family: monospace;
+    font-size: 0.82rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .key-input-row input:focus { border-color: var(--gold); }
+  .key-input-row input::placeholder { color: #555; }
+  .key-save-btn {
+    background: var(--red);
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    padding: 10px 20px;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .key-save-btn:hover { background: #a00020; }
+  .key-feedback {
+    font-size: 0.78rem;
+    margin-top: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 1px;
+    min-height: 20px;
+  }
+  .key-feedback.ok { color: #4caf50; }
+  .key-feedback.err { color: #ff5555; }
+
+  .modal-note {
+    margin-top: 20px;
+    background: #0d1a0d;
+    border: 1px solid #2a4a2a;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 0.8rem;
+    color: #5a8a5a;
+    line-height: 1.5;
+  }
+  .modal-note strong { color: #4caf50; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="logo">Five<span>&</span>Dive</div>
+    <div class="header-sub">Food · Booze · Rock'N'Roll</div>
+  </div>
+  <div class="divider"></div>
+  <div class="header-title">Event Generator</div>
+  <div style="margin-left:auto">
+    <button class="api-key-status ok" id="apiStatusPill" onclick="openApiModal()" title="Click to update API key" style="display:none">✓ API Key Saved</button>
+  </div>
+</div>
+
+<!-- API KEY BANNER — shows when key is missing -->
+<div class="api-banner" id="apiBanner" style="display:none">
+  <div class="api-banner-icon">🔑</div>
+  <div class="api-banner-text">
+    <strong>API Key Required</strong>
+    <span>Claude needs your Anthropic API key to generate write-ups. Takes 2 minutes — only needed once per device.</span>
+  </div>
+  <button class="api-banner-btn" onclick="openApiModal()">Set Up Now</button>
+</div>
+
+<!-- ── API KEY MODAL ───────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="apiModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeApiModal()">✕</button>
+    <div class="modal-title">🔑 API Key Setup</div>
+    <div class="modal-subtitle">One-time setup per device. Your key stays saved in this browser.</div>
+
+    <div class="key-input-area" style="margin-bottom:28px">
+      <label class="key-input-label">Paste your Anthropic API key here</label>
+      <div class="key-input-row">
+        <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false"/>
+        <button class="key-save-btn" onclick="saveApiKey()">Save Key</button>
+      </div>
+      <div class="key-feedback" id="keyFeedback"></div>
+    </div>
+
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px">
+      How to get your API key
+      <span style="flex:1;height:1px;background:#333;display:block"></span>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Go to the Anthropic Console</strong>
+          <p>Open a new tab and go to <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> — sign in with the same email you used to set up your Anthropic account (likely your personal email or <span class="code-inline">jerrod@fiveanddive.ca</span>).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Go to API Keys</strong>
+          <p>In the left sidebar, click <strong style="color:var(--text)">API Keys</strong>. If you already created one before, copy it from wherever you stored it (notes app, email, etc.) and skip to step 4.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Create a new key</strong>
+          <p>Click <strong style="color:var(--text)">"Create Key"</strong>. Give it a name like <span class="code-inline">FiveDive Studio</span> so you remember what it's for. Click Create.</p>
+          <div class="step-img">⚠️ Copy it immediately — Anthropic only shows the key once. You cannot retrieve it after closing that page.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Paste it above &amp; save</strong>
+          <p>Paste the key into the field at the top of this window. It starts with <span class="code-inline">sk-ant-</span>. Hit <strong style="color:var(--text)">Save Key</strong> — done. You won't need to do this again on this device and browser.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Lost your key or it stopped working?</strong>
+          <p>Old keys can't be recovered — but creating a new one takes 30 seconds. Go to <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com/settings/keys</a>, delete the old one, create a new one, and paste it here again.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-note">
+      <strong>🔒 Your key stays on your device.</strong> It's saved in this browser's local storage only — never stored anywhere else. It goes directly to Anthropic's API when generating content and nowhere else.
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="section-label">June 2026 Quick-Fill</div>
+    <div class="preset-grid" id="presetGrid"></div>
+
+    <br/>
+    <div class="section-label">Custom Event</div>
+
+    <div class="field-group">
+      <label>Band / Artist Name</label>
+      <input type="text" id="bandName" placeholder="e.g. The Repercussions"/>
+    </div>
+    <div class="field-group row2">
+      <div>
+        <label>Friday Date</label>
+        <input type="text" id="dateF" placeholder="Jun 5"/>
+      </div>
+      <div>
+        <label>Saturday Date</label>
+        <input type="text" id="dateS" placeholder="Jun 6"/>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Genre / Style (optional)</label>
+      <input type="text" id="genre" placeholder="e.g. Classic Rock, Pop Covers"/>
+    </div>
+    <div class="field-group">
+      <label>Extra Notes (optional)</label>
+      <textarea id="notes" placeholder="Anything extra you want in the write-up..."></textarea>
+    </div>
+
+    <button class="generate-btn" id="genBtn" onclick="generateOne()">⚡ Generate</button>
+
+    <br/><br/>
+    <div class="section-label">Batch</div>
+    <button class="generate-btn" onclick="generateAll()" id="batchBtn" style="background:#8b0000">🎸 Generate All June Events</button>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="output-panel" id="outputPanel">
+    <div class="output-empty" id="emptyState">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+      </svg>
+      <p>Select a band or fill in the form<br/>to generate thumbnails & write-ups</p>
+    </div>
+  </div>
+</div>
+
+<canvas id="thumbCanvas" width="1920" height="1080"></canvas>
+
+<script>
+// ── API KEY MANAGEMENT ───────────────────────────────────────
+const API_KEY_STORE = 'fd_studio_api_key';
+
+function getApiKey() {
+  return localStorage.getItem(API_KEY_STORE) || '';
+}
+
+function saveApiKey() {
+  const input = document.getElementById('apiKeyInput');
+  const feedback = document.getElementById('keyFeedback');
+  const key = input.value.trim();
+
+  if (!key) {
+    feedback.textContent = 'Please paste a key first.';
+    feedback.className = 'key-feedback err';
+    return;
+  }
+  if (!key.startsWith('sk-ant-')) {
+    feedback.textContent = 'That doesn\'t look right — Anthropic keys start with sk-ant-';
+    feedback.className = 'key-feedback err';
+    return;
+  }
+
+  localStorage.setItem(API_KEY_STORE, key);
+  feedback.textContent = '✓ Key saved! You\'re all set.';
+  feedback.className = 'key-feedback ok';
+  input.value = '';
+  updateApiKeyUI();
+  setTimeout(closeApiModal, 1200);
+}
+
+function openApiModal() {
+  document.getElementById('apiModal').classList.remove('hidden');
+  document.getElementById('keyFeedback').textContent = '';
+  document.getElementById('apiKeyInput').value = '';
+  setTimeout(() => document.getElementById('apiKeyInput').focus(), 100);
+}
+
+function closeApiModal() {
+  document.getElementById('apiModal').classList.add('hidden');
+}
+
+function updateApiKeyUI() {
+  const key = getApiKey();
+  const banner = document.getElementById('apiBanner');
+  const pill = document.getElementById('apiStatusPill');
+  if (key) {
+    banner.style.display = 'none';
+    pill.style.display = 'inline-flex';
+    pill.className = 'api-key-status ok';
+    pill.textContent = '✓ API Key Saved';
+  } else {
+    banner.style.display = 'flex';
+    pill.style.display = 'none';
+  }
+}
+
+// Close modal on overlay click
+document.getElementById('apiModal').addEventListener('click', function(e) {
+  if (e.target === this) closeApiModal();
+});
+
+// Allow Enter key in input to save
+document.getElementById('apiKeyInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') saveApiKey();
+});
+
+// Init on load
+updateApiKeyUI();
+
+// ── JUNE 2026 DATA ──────────────────────────────────────────
+const JUNE_EVENTS = [
+  { band:"Yongy Bongy Bo's", fri:"Jun 5", sat:"Jun 6", genre:"High-Energy Cover Band", color:"#7b1fa2" },
+  { band:"The Hitz",          fri:"Jun 12", sat:"Jun 13", genre:"Pop & Rock Covers", color:"#1565c0" },
+  { band:"Keith Spalding",    fri:"Jun 19", sat:"Jun 20", genre:"Rock & Blues", color:"#2e7d32" },
+  { band:"The Repercussions", fri:"Jun 26", sat:"Jun 27", genre:"Rock Cover Band", color:"#b71c1c" },
+];
+
+const API_URL = "https://api.anthropic.com/v1/messages";
+
+// ── RENDER PRESETS ───────────────────────────────────────────
+function renderPresets() {
+  const grid = document.getElementById('presetGrid');
+  grid.innerHTML = JUNE_EVENTS.map((e, i) => `
+    <button class="preset-btn" onclick="fillPreset(${i})">
+      <span>${e.band}</span>
+      <span class="dates">${e.fri} / ${e.sat}</span>
+    </button>
+  `).join('');
+}
+renderPresets();
+
+function fillPreset(i) {
+  const e = JUNE_EVENTS[i];
+  document.getElementById('bandName').value = e.band;
+  document.getElementById('dateF').value = e.fri;
+  document.getElementById('dateS').value = e.sat;
+  document.getElementById('genre').value = e.genre;
+  document.getElementById('notes').value = '';
+}
+
+// ── GENERATE WRITE-UP VIA CLAUDE API ────────────────────────
+async function getWriteup(band, fri, sat, genre, notes) {
+  const prompt = `You are writing promotional event copy for Five & Dive, a rock 'n' roll dive bar at West Edmonton Mall, Edmonton Alberta. Tagline: "Food, Booze, Rock & Roll." All food under $15. No cover charge — EVER. Music starts at 9:30pm and goes until 1:30am Friday and Saturday nights. Phone: (780) 444-DIVE (3483). Website: fiveanddive.ca.
+
+Write a punchy, energetic Squarespace event description (2–3 short paragraphs) for:
+Band: ${band}
+Dates: ${fri} & ${sat}, 2026
+Genre/Style: ${genre || 'Rock/Cover Band'}
+Extra notes: ${notes || 'None'}
+
+Keep it hype, bar-appropriate, and fun. Mention no cover charge, 9:30pm start, and the bar's vibe. Output ONLY the event description text — no title, no markdown, no JSON.`;
+
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    openApiModal();
+    throw new Error('No API key set');
+  }
+
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      openApiModal();
+      const fb = document.getElementById('keyFeedback');
+      fb.textContent = 'Your saved key was rejected — please paste a fresh one.';
+      fb.className = 'key-feedback err';
+    }
+    throw new Error(data?.error?.message || 'API error ' + res.status);
+  }
+  return data.content?.[0]?.text || 'Write-up unavailable.';
+}
+
+// ── DRAW THUMBNAIL TO CANVAS ─────────────────────────────────
+function drawThumbnail(band, fri, sat) {
+  const canvas = document.getElementById('thumbCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 1920, H = 1080;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background gradient — dark red to near-black
+  const bg = ctx.createRadialGradient(W*0.3, H*0.4, 0, W*0.5, H*0.5, W*0.8);
+  bg.addColorStop(0, '#6b0010');
+  bg.addColorStop(0.5, '#300008');
+  bg.addColorStop(1, '#080808');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Diagonal accent
+  ctx.save();
+  ctx.globalAlpha = 0.12;
+  ctx.fillStyle = '#c8102e';
+  ctx.beginPath();
+  ctx.moveTo(0, H*0.6); ctx.lineTo(W*0.65, 0); ctx.lineTo(W*0.75, 0); ctx.lineTo(0, H*0.7);
+  ctx.fill();
+  ctx.restore();
+
+  // Noise texture simulation with dots
+  ctx.save();
+  ctx.globalAlpha = 0.03;
+  for (let i = 0; i < 4000; i++) {
+    ctx.fillStyle = Math.random() > 0.5 ? '#fff' : '#c8102e';
+    ctx.fillRect(Math.random()*W, Math.random()*H, 2, 2);
+  }
+  ctx.restore();
+
+  // Red stripe top
+  ctx.fillStyle = '#c8102e';
+  ctx.fillRect(0, 0, W, 8);
+
+  // FIVE & DIVE logo top-left
+  ctx.font = `bold 52px 'Arial Narrow', Arial, sans-serif`;
+  ctx.fillStyle = '#ffffff';
+  ctx.globalAlpha = 0.9;
+  ctx.fillText('FIVE & DIVE', 80, 100);
+  ctx.font = `28px Arial, sans-serif`;
+  ctx.fillStyle = '#f0a500';
+  ctx.globalAlpha = 0.8;
+  ctx.fillText('FOOD · BOOZE · ROCK\'N\'ROLL', 80, 140);
+  ctx.globalAlpha = 1;
+
+  // LIVE MUSIC badge
+  ctx.fillStyle = '#c8102e';
+  roundRect(ctx, W-320, 60, 240, 56, 4);
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold 28px Arial, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('LIVE MUSIC', W-200, 98);
+  ctx.textAlign = 'left';
+
+  // Date banner
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.fillRect(60, H*0.52, 520, 72);
+  ctx.fillStyle = '#f0a500';
+  ctx.font = `bold 36px Arial, sans-serif`;
+  ctx.fillText(`${fri} & ${sat}, 2026`, 80, H*0.52+46);
+
+  // Band name — massive
+  const bandUpper = band.toUpperCase();
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = '#c8102e';
+  ctx.shadowBlur = 40;
+  
+  // Auto-size font
+  let fontSize = 220;
+  ctx.font = `900 ${fontSize}px 'Arial Black', Arial, sans-serif`;
+  while (ctx.measureText(bandUpper).width > W - 140 && fontSize > 60) {
+    fontSize -= 4;
+    ctx.font = `900 ${fontSize}px 'Arial Black', Arial, sans-serif`;
+  }
+  ctx.fillText(bandUpper, 70, H*0.48);
+  ctx.shadowBlur = 0;
+
+  // Bottom bar
+  ctx.fillStyle = 'rgba(0,0,0,0.75)';
+  ctx.fillRect(0, H-100, W, 100);
+  ctx.fillStyle = '#f0a500';
+  ctx.font = `bold 32px Arial, sans-serif`;
+  ctx.fillText('MUSIC STARTS AT 9:30PM', 80, H-52);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = `26px Arial, sans-serif`;
+  ctx.fillText('NO COVER · EVER  |  (780) 444-DIVE  |  fiveanddive.ca', 80, H-18);
+
+  // Red stripe bottom
+  ctx.fillStyle = '#c8102e';
+  ctx.fillRect(0, H-8, W, 8);
+
+  return canvas.toDataURL('image/png');
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.arcTo(x+w, y, x+w, y+r, r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.arcTo(x+w, y+h, x+w-r, y+h, r);
+  ctx.lineTo(x+r, y+h);
+  ctx.arcTo(x, y+h, x, y+h-r, r);
+  ctx.lineTo(x, y+r);
+  ctx.arcTo(x, y, x+r, y, r);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// ── BUILD RESULT CARD ────────────────────────────────────────
+function buildCard(band, fri, sat, writeup, imgData) {
+  const id = 'card-' + Date.now() + Math.random().toString(36).slice(2);
+  const card = document.createElement('div');
+  card.className = 'result-card';
+  card.id = id;
+  card.innerHTML = `
+    <div class="result-header">
+      <div>
+        <div class="result-band">${band}</div>
+        <div class="result-dates">${fri} & ${sat}, 2026 · Music 9:30PM · No Cover</div>
+      </div>
+    </div>
+    <div class="result-body">
+      <div class="thumbnail-section">
+        <div class="section-title">Thumbnail (1920×1080)</div>
+        <div class="thumbnail-preview">
+          <img src="${imgData}" alt="${band} thumbnail"/>
+        </div>
+        <div class="dl-btns">
+          <a class="dl-btn primary" href="${imgData}" download="${band.replace(/\s+/g,'_')}_${fri.replace(/\s/g,'')}_thumbnail.png">⬇ Download PNG</a>
+          <button class="dl-btn" onclick="copyImgToClip('${id}')">Copy Image</button>
+        </div>
+      </div>
+      <div class="writeup-section">
+        <div class="section-title">Squarespace Event Write-Up</div>
+        <div class="writeup-box" id="writeup-${id}">${writeup}</div>
+        <button class="copy-btn" id="copybtn-${id}" onclick="copyWriteup('${id}')">Copy Text</button>
+      </div>
+    </div>
+  `;
+  return card;
+}
+
+// ── GENERATE ONE ─────────────────────────────────────────────
+async function generateOne() {
+  const band  = document.getElementById('bandName').value.trim();
+  const fri   = document.getElementById('dateF').value.trim();
+  const sat   = document.getElementById('dateS').value.trim();
+  const genre = document.getElementById('genre').value.trim();
+  const notes = document.getElementById('notes').value.trim();
+
+  if (!band) { alert('Please enter a band name.'); return; }
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+
+  // Clear empty state
+  document.getElementById('emptyState')?.remove();
+
+  // Add loader
+  const loader = document.createElement('div');
+  loader.className = 'loader';
+  loader.id = 'loader-one';
+  loader.innerHTML = `<div class="spinner"></div><span>Generating for ${band}…</span>`;
+  document.getElementById('outputPanel').prepend(loader);
+
+  try {
+    const [writeup, imgData] = await Promise.all([
+      getWriteup(band, fri, sat, genre, notes),
+      Promise.resolve(drawThumbnail(band, fri, sat))
+    ]);
+    loader.remove();
+    const card = buildCard(band, fri, sat, writeup, imgData);
+    document.getElementById('outputPanel').prepend(card);
+  } catch(e) {
+    loader.remove();
+    console.error(e);
+    alert('Error generating content. Check console.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⚡ Generate';
+}
+
+// ── GENERATE ALL ─────────────────────────────────────────────
+async function generateAll() {
+  const btn = document.getElementById('batchBtn');
+  btn.disabled = true;
+  btn.textContent = 'Generating all 4 events...';
+  document.getElementById('emptyState')?.remove();
+
+  for (const e of JUNE_EVENTS) {
+    const loader = document.createElement('div');
+    loader.className = 'loader';
+    loader.innerHTML = `<div class="spinner"></div><span>Generating ${e.band}…</span>`;
+    document.getElementById('outputPanel').appendChild(loader);
+
+    try {
+      const [writeup, imgData] = await Promise.all([
+        getWriteup(e.band, e.fri, e.sat, e.genre, ''),
+        Promise.resolve(drawThumbnail(e.band, e.fri, e.sat))
+      ]);
+      loader.remove();
+      const card = buildCard(e.band, e.fri, e.sat, writeup, imgData);
+      document.getElementById('outputPanel').appendChild(card);
+    } catch(err) {
+      loader.textContent = `Failed: ${e.band}`;
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🎸 Generate All June Events';
+}
+
+// ── COPY HELPERS ─────────────────────────────────────────────
+function copyWriteup(id) {
+  const text = document.getElementById('writeup-' + id)?.innerText || '';
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copybtn-' + id);
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Text'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyImgToClip(id) {
+  const img = document.querySelector('#' + id + ' img');
+  if (!img) return;
+  fetch(img.src).then(r => r.blob()).then(blob => {
+    navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => {
+      alert('Image copied to clipboard!');
+    }).catch(() => alert('Copy not supported — use Download instead.'));
+  });
+}
+</script>
+</body>
+</html>
