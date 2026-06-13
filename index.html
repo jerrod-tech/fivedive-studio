@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Five & Dive · Promo Studio v2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --red: #c8102e; --dark-red: #8b0000; --gold: #f0a500;
+    --bg: #0d0d0d; --bg2: #1a1a1a; --bg3: #242424; --bg4: #2c2c2c;
+    --text: #f0ebe3; --muted: #888; --dim: #555; --border: #333; --border2: #444;
+    --green: #3fb950; --blue: #58a6ff; --purple: #a371f7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(180deg, #1a0005 0%, var(--bg) 100%);
+    border-bottom: 2px solid var(--red);
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; line-height: 1; }
+  .logo span { color: var(--red); }
+  .header-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-top: 2px; }
+  .divider { width: 1px; height: 40px; background: var(--border); margin: 0 4px; }
+  .header-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+  .header-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .hdr-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; padding: 5px 12px; border-radius: 3px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.15s; }
+  .hdr-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .hdr-btn.active { border-color: var(--red); color: var(--red); background: rgba(200,16,46,0.08); }
+  .version-badge { font-family: 'Barlow Condensed', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: var(--dim); }
+
+  /* ── API BANNER ── */
+  .api-banner { background: linear-gradient(135deg,#1a0a00,#1a0005); border-bottom: 2px solid var(--gold); padding: 12px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .api-banner-btn { background: var(--gold); border: none; border-radius: 4px; color: #000; cursor: pointer; font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 2px; padding: 8px 16px; transition: background 0.2s; white-space: nowrap; }
+  .api-banner-btn:hover { background: #d49200; }
+  .api-key-status { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; cursor: pointer; border: 1px solid transparent; }
+  .api-key-status.ok { color: #4caf50; border-color: #2a5c2a; background: #0d1f0d; }
+
+  /* ── QUEUE BANNER ── */
+  .queue-banner { background: rgba(240,165,0,0.08); border-bottom: 1px solid rgba(240,165,0,0.3); padding: 10px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .queue-banner:hover { background: rgba(240,165,0,0.12); }
+  .queue-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+  /* ── NAV TABS ── */
+  .nav-tabs { background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; }
+  .nav-tab { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; padding: 12px 20px; cursor: pointer; border: none; background: transparent; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.15s; }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* ── LAYOUT ── */
+  .page { display: none; }
+  .page.active { display: block; }
+  .split { display: grid; grid-template-columns: 360px 1fr; min-height: calc(100vh - 140px); }
+  .sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 20px; overflow-y: auto; }
+  .output-panel { padding: 28px; overflow-y: auto; }
+
+  /* ── FORM ELEMENTS ── */
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .section-label::after { content:''; flex:1; height:1px; background: var(--border); }
+  .field-group { margin-bottom: 16px; }
+  label { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  input, select, textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'Barlow', sans-serif; font-size: 0.9rem; padding: 9px 11px; outline: none; transition: border-color 0.2s; }
+  input:focus, select:focus, textarea:focus { border-color: var(--red); }
+  textarea { resize: vertical; min-height: 72px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* ── BUTTONS ── */
+  .btn-primary { width: 100%; background: var(--red); border: none; border-radius: 4px; color: #fff; cursor: pointer; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 3px; padding: 13px; transition: background 0.2s; margin-top: 6px; }
+  .btn-primary:hover { background: #a00020; }
+  .btn-primary:disabled { background: #555; cursor: not-allowed; }
+  .btn-gold { background: var(--gold); border: none; border-radius: 4px; color: #000; cursor: pointer; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; padding: 10px 18px; transition: background 0.2s; }
+  .btn-gold:hover { background: #d49200; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; padding: 7px 14px; transition: all 0.15s; }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-sm { font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; padding: 5px 10px; border-radius: 3px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.15s; }
+  .btn-sm:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-sm.danger:hover { border-color: var(--red); color: var(--red); }
+  .btn-sm.approve { border-color: #2a5c2a; color: var(--green); }
+  .btn-sm.approve:hover { background: rgba(63,185,80,0.1); }
+
+  /* ── PRESETS ── */
+  .preset-grid { display: flex; flex-direction: column; gap: 6px; }
+  .preset-btn { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; color: var(--text); cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 600; letter-spacing: 1px; padding: 9px 12px; text-align: left; transition: all 0.15s; display: flex; justify-content: space-between; align-items: center; }
+  .preset-btn:hover { border-color: var(--red); background: #2a0008; }
+  .preset-btn .dates { color: var(--gold); font-size: 0.75rem; font-weight: 400; }
+  .preset-btn.calendar-event { border-color: rgba(88,166,255,0.3); }
+  .preset-btn.calendar-event:hover { border-color: var(--blue); background: rgba(88,166,255,0.05); }
+  .preset-btn.needs-promo::after { content: '⚡ NO PROMO'; font-size: 0.55rem; letter-spacing: 1px; background: rgba(200,16,46,0.2); color: #ff6b6b; padding: 2px 5px; border-radius: 2px; margin-left: 6px; }
+
+  /* ── RESULT CARDS ── */
+  .result-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 20px; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+  .result-header { background: linear-gradient(135deg,#1a0005,var(--bg3)); border-bottom: 1px solid var(--border); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .result-band { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 2px; }
+  .result-dates { font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
+  .result-body { display: grid; grid-template-columns: 1fr 1fr; }
+  .thumbnail-section { padding: 18px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+  .writeup-section { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .section-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); }
+  .thumbnail-preview { width: 100%; aspect-ratio: 16/9; border-radius: 4px; border: 1px solid var(--border); background: #111; overflow: hidden; }
+  .thumbnail-preview img { width: 100%; height: 100%; object-fit: cover; }
+  .dl-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .dl-btn { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; color: var(--text); cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; padding: 7px 10px; text-align: center; transition: all 0.15s; text-decoration: none; display: block; }
+  .dl-btn:hover { border-color: var(--red); color: var(--red); }
+  .dl-btn.primary { background: var(--red); border-color: var(--red); color: #fff; }
+  .dl-btn.primary:hover { background: #a00020; }
+  .writeup-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'Barlow', sans-serif; font-size: 0.87rem; line-height: 1.6; padding: 12px; white-space: pre-wrap; min-height: 100px; flex: 1; }
+  .copy-btn { background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; padding: 5px 10px; transition: all 0.15s; align-self: flex-end; }
+  .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .copy-btn.copied { border-color: #4caf50; color: #4caf50; }
+
+  /* ── APPROVE ACTIONS on result card ── */
+  .card-actions { padding: 12px 18px; border-top: 1px solid var(--border); background: var(--bg3); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .card-actions .info { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 1px; color: var(--muted); flex: 1; }
+
+  /* ── LOADER ── */
+  .loader { display: flex; align-items: center; gap: 10px; color: var(--muted); font-family: 'Barlow Condensed', sans-serif; font-size: 0.82rem; letter-spacing: 2px; text-transform: uppercase; padding: 10px 0; }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--red); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg);} }
+
+  /* ── EMPTY STATE ── */
+  .output-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; gap: 14px; color: var(--muted); text-align: center; }
+  .output-empty svg { opacity: 0.15; }
+  .output-empty p { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; }
+
+  /* ── BAND RECORDS ── */
+  .band-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; margin-bottom: 12px; }
+  .band-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .band-name-big { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 2px; }
+  .band-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+  .band-meta-item { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 1px; color: var(--muted); }
+  .band-meta-item strong { color: var(--text); }
+  .band-links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .band-link { font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 3px; border: 1px solid var(--border); color: var(--gold); text-decoration: none; cursor: pointer; transition: all 0.15s; background: transparent; }
+  .band-link:hover { border-color: var(--gold); background: rgba(240,165,0,0.08); }
+  .band-history { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .history-row { font-size: 0.82rem; color: #999; padding: 3px 0; display: flex; gap: 10px; }
+  .history-date { color: var(--gold); font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 1px; min-width: 80px; }
+
+  /* ── EMAIL DRAFTS PANEL ── */
+  .draft-panel { background: var(--bg2); border: 1px solid var(--gold); border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .draft-panel-header { background: rgba(240,165,0,0.08); padding: 12px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .draft-panel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); flex: 1; }
+  .draft-body { padding: 16px; border-top: 1px solid var(--border); }
+  .draft-field { margin-bottom: 10px; }
+  .draft-field label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 4px; }
+  .draft-field input, .draft-field textarea { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'Barlow', sans-serif; font-size: 0.85rem; padding: 8px 10px; width: 100%; outline: none; }
+  .draft-field textarea { min-height: 120px; resize: vertical; }
+  .draft-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+  /* ── THREAD READER ── */
+  .thread-reader { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 18px; margin-bottom: 16px; }
+  .thread-status { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; padding: 6px 0; min-height: 24px; }
+  .thread-status.loading { color: var(--blue); }
+  .thread-status.ok { color: var(--green); }
+  .thread-status.err { color: var(--red); }
+
+  /* ── TEMPLATES ── */
+  .template-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+  .template-header { padding: 12px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; background: var(--bg3); }
+  .template-name { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; flex: 1; }
+  .template-body { padding: 14px 16px; border-top: 1px solid var(--border); display: none; }
+  .template-body.open { display: block; }
+  .template-text { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 12px; font-size: 0.85rem; line-height: 1.6; color: #ccc; white-space: pre-wrap; margin-bottom: 10px; max-height: 280px; overflow-y: auto; }
+
+  /* ── QUEUE PAGE ── */
+  .queue-card { background: var(--bg2); border: 1px solid rgba(240,165,0,0.3); border-radius: 8px; margin-bottom: 14px; overflow: hidden; }
+  .queue-card-header { padding: 14px 16px; background: rgba(240,165,0,0.05); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .queue-by { font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+  .queue-actions { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--bg3); }
+
+  /* ── CALENDAR EVENTS ── */
+  .cal-event { background: var(--bg3); border: 1px solid rgba(88,166,255,0.2); border-radius: 6px; padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .cal-event-name { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 1px; }
+  .cal-event-date { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 2px; color: var(--blue); text-transform: uppercase; }
+  .cal-event.has-promo { border-color: rgba(63,185,80,0.2); opacity: 0.6; }
+  .cal-event.needs-promo { border-color: rgba(200,16,46,0.3); }
+
+  /* ── MODAL ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.hidden { display: none; }
+  .modal { background: #141416; border: 1px solid #333; border-top: 3px solid var(--gold); border-radius: 10px; max-width: 600px; width: 100%; max-height: 88vh; overflow-y: auto; padding: 28px; position: relative; animation: slideUp 0.25s ease; }
+  @keyframes slideUp { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
+  .modal-close { position: absolute; top: 14px; right: 14px; background: none; border: none; color: #666; cursor: pointer; font-size: 1.3rem; line-height: 1; padding: 4px 8px; }
+  .modal-close:hover { color: var(--text); }
+  .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 4px; }
+  .modal-sub { font-size: 0.8rem; color: #888; margin-bottom: 20px; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; }
+
+  /* API key modal steps */
+  .steps { display: flex; flex-direction: column; gap: 0; margin-bottom: 24px; }
+  .step { display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid #222; }
+  .step:last-child { border-bottom: none; }
+  .step-num { background: var(--red); color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .step-content strong { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text); margin-bottom: 3px; }
+  .step-content p { font-size: 0.82rem; color: #aaa; line-height: 1.5; }
+  .step-content a { color: var(--gold); text-decoration: none; }
+  .code-inline { background: #1e1e1e; border: 1px solid #333; border-radius: 3px; color: #e8b341; font-family: monospace; font-size: 0.76rem; padding: 1px 5px; }
+  .step-warn-box { background: rgba(200,16,46,0.06); border-left: 2px solid var(--red); padding: 6px 10px; margin-top: 6px; font-size: 0.76rem; color: #aaa; border-radius: 0 3px 3px 0; }
+  .key-input-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 7px; display: block; }
+  .key-input-row { display: flex; gap: 8px; }
+  .key-input-row input { flex: 1; background: #1a1a1a; border: 1px solid #444; border-radius: 4px; color: var(--text); font-family: monospace; font-size: 0.8rem; padding: 9px 12px; outline: none; }
+  .key-input-row input:focus { border-color: var(--gold); }
+  .key-save-btn { background: var(--red); border: none; border-radius: 4px; color: #fff; cursor: pointer; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 2px; padding: 9px 18px; white-space: nowrap; }
+  .key-feedback { font-size: 0.76rem; margin-top: 7px; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; min-height: 18px; }
+  .key-feedback.ok { color: #4caf50; }
+  .key-feedback.err { color: #ff5555; }
+  .modal-note { margin-top: 16px; background: #0d1a0d; border: 1px solid #2a4a2a; border-radius: 5px; padding: 10px 14px; font-size: 0.78rem; color: #5a8a5a; line-height: 1.5; }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 6px; padding: 10px 18px; font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; letter-spacing: 1px; z-index: 2000; animation: toastIn 0.3s ease; max-width: 300px; }
+  .toast.ok { border-left: 3px solid var(--green); }
+  .toast.warn { border-left: 3px solid var(--gold); }
+  .toast.err { border-left: 3px solid var(--red); }
+  @keyframes toastIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+
+  /* ── CALLOUT ── */
+  .callout { background: rgba(240,165,0,0.05); border-left: 3px solid var(--gold); border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 12px 0; font-size: 0.84rem; color: #bbb; line-height: 1.55; }
+  .callout strong { color: var(--gold); }
+  .callout.blue { border-left-color: var(--blue); }
+  .callout.blue strong { color: var(--blue); }
+  .callout.green { border-left-color: var(--green); }
+  .callout.green strong { color: var(--green); }
+  .callout.red { border-left-color: var(--red); }
+  .callout.red strong { color: #ff6b6b; }
+
+  /* ── PILL BADGE ── */
+  .pill { display: inline-block; font-family: 'Barlow Condensed', sans-serif; font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; padding: 2px 7px; border-radius: 100px; border: 1px solid var(--border2); color: var(--muted); vertical-align: middle; margin-left: 4px; }
+  .pill.gold { border-color: rgba(240,165,0,0.4); color: var(--gold); background: rgba(240,165,0,0.06); }
+  .pill.green { border-color: rgba(63,185,80,0.4); color: var(--green); background: rgba(63,185,80,0.06); }
+  .pill.red { border-color: rgba(200,16,46,0.4); color: #ff6b6b; background: rgba(200,16,46,0.06); }
+  .pill.blue { border-color: rgba(88,166,255,0.4); color: var(--blue); background: rgba(88,166,255,0.06); }
+
+  /* ── MISC ── */
+  canvas { display: none; }
+  .mt-2 { margin-top: 8px; }
+  .mb-2 { margin-bottom: 8px; }
+  .gap-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+  @media (max-width: 800px) {
+    .split { grid-template-columns: 1fr; }
+    .result-body { grid-template-columns: 1fr; }
+    .thumbnail-section { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="logo">Five<span>&</span>Dive</div>
+    <div class="header-sub">Food · Booze · Rock'N'Roll</div>
+  </div>
+  <div class="divider"></div>
+  <div class="header-title">Promo Studio</div>
+  <div class="header-actions">
+    <span class="version-badge">v2.0</span>
+    <span class="api-key-status ok" id="apiStatusPill" onclick="openApiModal()" style="display:none">✓ API Key</span>
+    <button class="hdr-btn" onclick="openApiModal()" id="apiSetupBtn">🔑 Setup</button>
+    <button class="hdr-btn" onclick="scanGmailThread()" title="Paste Gmail URL to auto-fill form">📧 Read Thread</button>
+    <button class="hdr-btn" onclick="scanCalendar()" title="Check calendar for upcoming unpromod events">📅 Scan Calendar</button>
+  </div>
+</div>
+
+<!-- API BANNER -->
+<div class="api-banner" id="apiBanner" style="display:none">
+  <span style="font-size:1.2rem">🔑</span>
+  <div style="flex:1">
+    <strong style="font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:2px">API Key Required</strong>
+    <span style="font-size:0.8rem;color:#aaa">Claude needs your Anthropic API key to generate copy. One-time setup per device.</span>
+  </div>
+  <button class="api-banner-btn" onclick="openApiModal()">Set Up Now</button>
+</div>
+
+<!-- APPROVAL QUEUE BANNER -->
+<div class="queue-banner" id="queueBanner" style="display:none" onclick="switchTab('queue')">
+  <div class="queue-dot"></div>
+  <span style="font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold)">
+    <span id="queueCount">0</span> promo(s) waiting for your approval
+  </span>
+  <span style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;color:var(--muted);margin-left:auto">Review →</span>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="switchTab('generate')" id="tab-generate">⚡ Generate</button>
+  <button class="nav-tab" onclick="switchTab('queue')" id="tab-queue">📋 Approval Queue</button>
+  <button class="nav-tab" onclick="switchTab('dispatch')" id="tab-dispatch">🚀 Launch Checklist</button>
+  <button class="nav-tab" onclick="switchTab('bands')" id="tab-bands">🎸 Band Records</button>
+  <button class="nav-tab" onclick="switchTab('templates')" id="tab-templates">✉️ Email Templates</button>
+  <button class="nav-tab" onclick="switchTab('calendar')" id="tab-calendar">📅 Upcoming Shows</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: GENERATE
+══════════════════════════════════════════════════════════ -->
+<div class="page active" id="page-generate">
+  <div class="split">
+    <div class="sidebar">
+
+      <!-- WHO AM I -->
+      <div class="field-group">
+        <label>You are</label>
+        <select id="currentUser" onchange="onUserChange()">
+          <option value="">— Select —</option>
+          <option value="jerrod">Jerrod Sutherland</option>
+          <option value="payton">Payton Smith</option>
+        </select>
+      </div>
+
+      <!-- GMAIL THREAD READER -->
+      <div class="section-label">Gmail Thread Reader</div>
+      <div class="thread-reader">
+        <div class="field-group" style="margin-bottom:8px">
+          <label>Paste Gmail thread URL</label>
+          <input type="url" id="threadUrl" placeholder="https://mail.google.com/mail/u/0/#inbox/..."/>
+        </div>
+        <button class="btn-ghost" style="width:100%" onclick="readThread()">📧 Read Thread & Auto-Fill</button>
+        <div class="thread-status" id="threadStatus"></div>
+      </div>
+
+      <!-- CALENDAR EVENTS -->
+      <div class="section-label">Upcoming (Calendar)</div>
+      <div id="calendarPresets">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:1px;color:var(--dim);padding:6px 0">
+          Click "Scan Calendar" in header to load upcoming shows
+        </div>
+      </div>
+
+      <!-- MANUAL PRESETS -->
+      <div class="section-label" style="margin-top:16px">June 2026 Quick-Fill</div>
+      <div class="preset-grid" id="presetGrid"></div>
+
+      <div class="section-label" style="margin-top:16px">Event Details</div>
+
+      <div class="field-group">
+        <label>Band / Artist Name</label>
+        <input type="text" id="bandName" placeholder="e.g. The Repercussions"/>
+      </div>
+      <div class="field-group row2">
+        <div>
+          <label>Friday Date</label>
+          <input type="text" id="dateF" placeholder="Jun 27"/>
+        </div>
+        <div>
+          <label>Saturday Date</label>
+          <input type="text" id="dateS" placeholder="Jun 28"/>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Genre / Style</label>
+        <input type="text" id="genre" placeholder="e.g. Classic Rock Covers"/>
+      </div>
+      <div class="field-group">
+        <label>Contact Email (optional)</label>
+        <input type="email" id="contactEmail" placeholder="band@email.com"/>
+      </div>
+      <div class="field-group">
+        <label>Instagram Handle (optional)</label>
+        <input type="text" id="instagram" placeholder="@bandname"/>
+      </div>
+      <div class="field-group">
+        <label>Extra Notes (optional)</label>
+        <textarea id="notes" placeholder="Known songs, past shows, anything for the write-up..."></textarea>
+      </div>
+
+      <button class="btn-primary" id="genBtn" onclick="generateOne()">⚡ Generate Promo</button>
+      <button class="btn-primary" onclick="generateAll()" id="batchBtn" style="background:var(--dark-red);margin-top:8px;font-size:1rem">🎸 Generate All June Events</button>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="output-panel" id="outputPanel">
+      <div class="output-empty" id="emptyState">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+        </svg>
+        <p>Fill in the form or paste a Gmail URL<br/>to generate promo assets</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: APPROVAL QUEUE (Jerrod only)
+══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-queue">
+  <div style="padding:28px;max-width:900px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px">Approval Queue</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase">Promos waiting for your review</div>
+      </div>
+    </div>
+    <div id="queueList">
+      <div style="color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;letter-spacing:2px;text-transform:uppercase;padding:40px 0;text-align:center">No promos pending approval</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: LAUNCH CHECKLIST / DISPATCH
+══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-dispatch">
+  <div style="padding:28px;max-width:900px">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;margin-bottom:4px">Launch Checklist</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:20px">Draft emails and actions for approved promos</div>
+
+    <div id="dispatchPromoSelect" style="margin-bottom:20px">
+      <label>Select approved promo</label>
+      <select id="dispatchSelect" onchange="loadDispatch()" style="max-width:400px">
+        <option value="">— Choose a promo —</option>
+      </select>
+    </div>
+
+    <div id="dispatchContent" style="display:none">
+
+      <!-- PRINTER EMAIL -->
+      <div class="draft-panel">
+        <div class="draft-panel-header" onclick="toggleDraft('draftPrinter')">
+          <span style="font-size:1.1rem">🖨️</span>
+          <div class="draft-panel-title">Printer Email — Travis at Blueshift</div>
+          <span class="pill blue">Draft Ready</span>
+          <span style="color:var(--muted);font-size:0.8rem">▼</span>
+        </div>
+        <div class="draft-body" id="draftPrinter" style="display:none">
+          <div class="draft-field"><label>To</label><input type="text" id="printerTo" value="travis@blueshift.ca"/></div>
+          <div class="draft-field"><label>Subject</label><input type="text" id="printerSubject"/></div>
+          <div class="draft-field"><label>Body</label><textarea id="printerBody" style="min-height:180px"></textarea></div>
+          <div class="draft-actions">
+            <button class="btn-ghost" onclick="copyDraft('printerSubject','printerBody')">Copy Draft</button>
+            <button class="btn-ghost" onclick="openGmailDraft('printerTo','printerSubject','printerBody')">Open in Gmail ↗</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERFORMER EMAIL -->
+      <div class="draft-panel">
+        <div class="draft-panel-header" onclick="toggleDraft('draftPerformer')">
+          <span style="font-size:1.1rem">🎤</span>
+          <div class="draft-panel-title">Performer Confirmation Email</div>
+          <span class="pill green">Draft Ready</span>
+          <span style="color:var(--muted);font-size:0.8rem">▼</span>
+        </div>
+        <div class="draft-body" id="draftPerformer" style="display:none">
+          <div class="draft-field"><label>To</label><input type="text" id="performerTo"/></div>
+          <div class="draft-field"><label>Subject</label><input type="text" id="performerSubject"/></div>
+          <div class="draft-field"><label>Body</label><textarea id="performerBody" style="min-height:200px"></textarea></div>
+          <div class="draft-actions">
+            <button class="btn-ghost" onclick="copyDraft('performerSubject','performerBody')">Copy Draft</button>
+            <button class="btn-ghost" onclick="openGmailDraft('performerTo','performerSubject','performerBody')">Open in Gmail ↗</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SQUARESPACE -->
+      <div class="draft-panel">
+        <div class="draft-panel-header" onclick="toggleDraft('draftSquare')">
+          <span style="font-size:1.1rem">🌐</span>
+          <div class="draft-panel-title">Squarespace Website Event</div>
+          <span class="pill gold">Manual Upload</span>
+          <span style="color:var(--muted);font-size:0.8rem">▼</span>
+        </div>
+        <div class="draft-body" id="draftSquare" style="display:none">
+          <div class="callout blue"><strong>How to post:</strong> Copy the write-up below → Open Squarespace → Pages → Events → Add Event → paste description, set date to show Friday at 9:30 PM, upload thumbnail PNG.</div>
+          <div class="draft-field"><label>Event Title</label><input type="text" id="squareTitle"/></div>
+          <div class="draft-field"><label>Description (paste into Squarespace)</label><textarea id="squareBody" style="min-height:160px"></textarea></div>
+          <div class="draft-actions">
+            <button class="btn-ghost" onclick="copyField('squareBody')">Copy Description</button>
+            <a href="https://account.squarespace.com" target="_blank" rel="noopener" style="text-decoration:none"><button class="btn-ghost">Open Squarespace ↗</button></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- RYAN / DESIGN HISTORY -->
+      <div class="draft-panel" id="ryanPanel">
+        <div class="draft-panel-header" onclick="toggleDraft('draftRyan')">
+          <span style="font-size:1.1rem">🎨</span>
+          <div class="draft-panel-title">Designer — Ryan Majeau</div>
+          <span class="pill" id="ryanHistoryPill">Checking...</span>
+          <span style="color:var(--muted);font-size:0.8rem">▼</span>
+        </div>
+        <div class="draft-body" id="draftRyan" style="display:none">
+          <div id="ryanHistory" style="margin-bottom:12px"></div>
+          <div class="draft-field"><label>To</label><input type="text" id="ryanTo" value="ryanmajeau@gmail.com"/></div>
+          <div class="draft-field"><label>Subject</label><input type="text" id="ryanSubject"/></div>
+          <div class="draft-field"><label>Body</label><textarea id="ryanBody" style="min-height:160px"></textarea></div>
+          <div class="draft-actions">
+            <button class="btn-ghost" onclick="copyDraft('ryanSubject','ryanBody')">Copy Draft</button>
+            <button class="btn-ghost" onclick="openGmailDraft('ryanTo','ryanSubject','ryanBody')">Open in Gmail ↗</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /dispatchContent -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: BAND RECORDS
+══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-bands">
+  <div style="padding:28px;max-width:900px">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px">Band Records</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase">Auto-populated from Gmail threads & promo history</div>
+      </div>
+      <input type="text" id="bandSearch" placeholder="Search bands..." style="max-width:260px;margin-left:auto" oninput="renderBandRecords()"/>
+    </div>
+    <div id="bandRecordsList">
+      <div style="color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;letter-spacing:2px;text-transform:uppercase;padding:40px 0;text-align:center">No band records yet — generate promos or read Gmail threads to build history</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: EMAIL TEMPLATES
+══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-templates">
+  <div style="padding:28px;max-width:900px">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;margin-bottom:4px">Email Templates</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Ready-to-use drafts — fill in the highlighted fields and send</div>
+    <div class="callout" style="margin-bottom:20px">To use with a specific person: click <strong>Use for Thread</strong> on any template, paste the Gmail URL, and Claude will fill in their name and details automatically.</div>
+    <div id="templateList"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: UPCOMING SHOWS / CALENDAR
+══════════════════════════════════════════════════════════ -->
+<div class="page" id="page-calendar">
+  <div style="padding:28px;max-width:900px">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px">Upcoming Shows</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase">From your Google Calendar · jerrod@fiveanddive.ca</div>
+      </div>
+      <button class="btn-gold" style="margin-left:auto" onclick="scanCalendar()">📅 Refresh Calendar</button>
+    </div>
+    <div id="calendarList">
+      <div style="color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;letter-spacing:2px;text-transform:uppercase;padding:40px 0;text-align:center">Click "Refresh Calendar" to scan your Google Calendar</div>
+    </div>
+  </div>
+</div>
+
+<!-- CANVAS (hidden) -->
+<canvas id="thumbCanvas" width="1920" height="1080"></canvas>
+
+<!-- API KEY MODAL -->
+<div class="modal-overlay hidden" id="apiModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeApiModal()">✕</button>
+    <div class="modal-title">🔑 API Key Setup</div>
+    <div class="modal-sub">One-time setup per device. Stays in this browser only.</div>
+    <div style="margin-bottom:24px">
+      <label class="key-input-label">Paste your Anthropic API key</label>
+      <div class="key-input-row">
+        <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false"/>
+        <button class="key-save-btn" onclick="saveApiKey()">Save</button>
+      </div>
+      <div class="key-feedback" id="keyFeedback"></div>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><strong>Go to Anthropic Console</strong><p>Open <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — sign in with your account.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><strong>API Keys → Create Key</strong><p>Left sidebar → API Keys → Create Key. Name it <span class="code-inline">FiveDive Studio</span>.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><strong>Copy immediately</strong><p>Anthropic only shows it once.</p><div class="step-warn-box">⚠️ Copy before closing that page — you can never see it again.</div></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><strong>Paste above & Save</strong><p>Key starts with <span class="code-inline">sk-ant-</span>. Done — won't need to do this again here.</p></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-content"><strong>Lost it?</strong><p><a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com/settings/keys</a> → delete old → create new.</p></div></div>
+    </div>
+    <div class="modal-note">🔒 Your key stays on this device only — never stored anywhere else.</div>
+  </div>
+</div>
+
+<!-- THREAD READER MODAL -->
+<div class="modal-overlay hidden" id="threadModal">
+  <div class="modal" style="border-top-color:var(--blue)">
+    <button class="modal-close" onclick="closeModal('threadModal')">✕</button>
+    <div class="modal-title" style="color:var(--blue)">📧 Thread Extract</div>
+    <div class="modal-sub">Review what Claude found in the email thread</div>
+    <div id="threadExtract"></div>
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+      <button class="btn-gold" onclick="applyThreadExtract()">✓ Apply to Form</button>
+      <button class="btn-ghost" onclick="closeModal('threadModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEMPLATE USE MODAL -->
+<div class="modal-overlay hidden" id="templateModal">
+  <div class="modal" style="max-width:700px">
+    <button class="modal-close" onclick="closeModal('templateModal')">✕</button>
+    <div class="modal-title" id="templateModalTitle">Email Template</div>
+    <div class="modal-sub" id="templateModalSub"></div>
+    <div class="draft-field"><label>Recipient Name</label><input type="text" id="tmplName" placeholder="e.g. The Hitz"/></div>
+    <div class="draft-field"><label>Event / Show Date (if applicable)</label><input type="text" id="tmplDate" placeholder="e.g. July 4 & 5, 2026"/></div>
+    <div class="draft-field"><label>Email Preview</label><textarea id="tmplPreview" style="min-height:280px;font-family:monospace;font-size:0.82rem"></textarea></div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn-gold" onclick="fillTemplate()">Fill Template</button>
+      <button class="btn-ghost" onclick="copyField('tmplPreview')">Copy Email</button>
+      <button class="btn-ghost" onclick="openGmailFromTemplate()">Open in Gmail ↗</button>
+      <button class="btn-ghost" onclick="closeModal('templateModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── CONSTANTS ────────────────────────────────────────────────
+const API_KEY_STORE = 'fd_studio_api_key';
+const STORE_KEY     = 'fd_studio_v2';
+const API_URL       = 'https://api.anthropic.com/v1/messages';
+
+const JUNE_EVENTS = [
+  { band:"Yongy Bongy Bo's", fri:"Jun 5",  sat:"Jun 6",  genre:"High-Energy Cover Band" },
+  { band:"The Hitz",          fri:"Jun 12", sat:"Jun 13", genre:"Pop & Rock Covers" },
+  { band:"Keith Spalding",    fri:"Jun 19", sat:"Jun 20", genre:"Rock & Blues" },
+  { band:"The Repercussions", fri:"Jun 26", sat:"Jun 27", genre:"Rock Cover Band" },
+];
+
+// ── EMAIL TEMPLATES ──────────────────────────────────────────
+const TEMPLATES = [
+  {
+    id: 'botb_band_thursday',
+    name: 'Battle of the Bands — Band (Thursday, $500)',
+    icon: '🎸',
+    color: 'var(--red)',
+    subject: 'Five & Dive — Battle of the Bands · You\'re In!',
+    body: `Hello!
+   Thanks for you interest in participating in our Battle of The Bands. We are very excited and look forward to hearing you perform and Best of Luck! Here are a couple of things to note..
+In the case you are entered is the itinerary and guidelines for the event.
+- Please be at Five & Dive with your equipment loaded and ready for 8:00 PM.
+- We will hold a random draw at 8:00 PM to decide the set schedule.
+- Competition will begin at 8:30 PM
+- You will be given a 30 Minute time slot to perform some covers and originals. If we have more bands then that time can be cut down to about 20-25 minutes
+- After your performance, the Judges will discuss and keep their scores until the end of the competition.
+- There will also be a third judge which is the crowd and spectators. They will give their votes and the average of all votes will equal the third judges score.
+- Best overall score from all 3 judges at the end of the night will win our Grand Prize of $500.00 and Bragging rights.
+- In the case of a tie... The participants involved in the tie will perform one more song head to head to settle the competition once and for all. If a decision cannot be made then the tie breaking participants will split the prize.
+- Judges will be looking at talent, stage presence, creativity and crowd reaction/satisfaction.
+- Please note that house rules apply and to be respectful to guests and other participants.
+- Drug use of any kind is not tolerated
+- We will be posting promo on our social media, so please find on @fiveanddivewem on instagram and Five & Dive on Facebook to repost and spread the word.
+Equipment we provide:
+Full PA system / 2 monitors
+Mics / cables
+Drum kit / mics
+Stands
+Traynor bass amp
+Bring your own snare if you want
+Bring your guitar amp if you need one
+Bring your own mics if you have a preferred one
+Bring in ear monitors if you have/would prefer them
+Look forward to the show and Good Luck!
+
+--
+Jerrod Sutherland
+General Manager
+#1650 Bourbon St. WEM 8882 170 St. Edmonton, Alberta T5T-4M2
+(C) 780.964.0600`
+  },
+  {
+    id: 'botb_band_multi',
+    name: 'Battle of the Bands — Band (Multi-Night)',
+    icon: '🎸',
+    color: 'var(--red)',
+    subject: 'Five & Dive — Battle of the Bands · Details Inside',
+    body: `Hello!
+   Thanks for you interest in participating in our Battle of The Bands. We are very excited and look forward to hearing you perform and Best of Luck! Here are a couple things to note for [DATE/NIGHT].
+Please be at Five & Dive with your equipment loaded and ready for 8:00 PM.
+- We will hold a random draw at 8:00 PM to decide the set schedule.
+- Competition will begin at 8:30 PM and run until approx. 12:30 AM
+- There will be approx. 7 contestants for the event
+- You will be given a 20-25 Minute time slot to perform some covers and originals
+- After your performance, the Judges will discuss and keep their scores until the end of the competition.
+- There will also be a third judge which is the crowd and spectators. They will give their votes and the average of all votes will equal the third judges score.
+- Best overall score from our judges at the end of the night will win our 1st place prize of $200.00, with 2nd place getting $100.00 and 3rd with $50.00. And... Bragging rights.
+- In the case of a tie... The participants involved in the tie will perform one more song head to head to settle the competition once and for all. If a decision cannot be made then the tie breaking participants will split the prize.
+- Judges will be looking at talent, stage presence, creativity and crowd reaction/satisfaction.
+- Please note that house rules apply and to be respectful to guests and other participants.
+- Drug use of any kind is not tolerated
+- We will be posting promo on our social media, so please find on @fiveanddivewem on instagram and Five & Dive on Facebook to repost and spread the word.
+- Please know that this is a solo artists competition only. No other members will be allowed to join on stage.
+- We provide... Microphones, Full PA, etc. You are welcome to bring your own equipment.
+Look Forward to hearing you on stage and Good Luck!
+
+--
+Jerrod Sutherland
+General Manager
+#1650 Bourbon St. WEM 8882 170 St. Edmonton, Alberta T5T-4M2
+(C) 780.964.0600`
+  },
+  {
+    id: 'botb_solo_confirm',
+    name: 'Battle of the Bands — Solo Artist Confirmation',
+    icon: '🎤',
+    color: 'var(--purple)',
+    subject: 'Five & Dive — Solo Battle of the Bands · You\'re Confirmed!',
+    body: `Thanks for entering and participating in our Battle of The Bands Solo artists edition! We are very excited and look forward to hearing you perform and Best of Luck! Here are a couple things to note for the event.
+Please be at Five & Dive with your equipment loaded and ready for 8:00 PM.
+- We will hold a random draw at 8:00 PM to decide the set schedule.
+- Competition will begin at 8:30 PM and run until approx. 12:30 AM
+- There will be approx. 7 contestants for the event
+- You will be given a 25 Minute time slot to perform some covers and originals
+- After your performance, the Judges will discuss and keep their scores until the end of the competition.
+- There will also be a third judge which is the crowd and spectators. They will give their votes and the average of all votes will equal the third judges score.
+- Best overall score from our judges at the end of the night will win our 1st place prize of $200.00, with 2nd place getting $100.00 and 3rd with $50.00. And... Bragging rights.
+- In the case of a tie... The participants involved in the tie will perform one more song head to head to settle the competition once and for all. If a decision cannot be made then the tie breaking participants will split the prize.
+- Judges will be looking at talent, stage presence, creativity and crowd reaction/satisfaction.
+- Please note that house rules apply and to be respectful to guests and other participants.
+- Drug use of any kind is not tolerated
+- We will be posting promo on our social media, so please find on @fiveanddivewem on instagram and Five & Dive on Facebook to repost and spread the word.
+- Please know that this is a solo artists competition only. No other members will be allowed to join on stage.
+- We provide... Microphones, Full PA, etc. You are welcome to bring your own equipment.
+Look Forward to hearing you on stage and Good Luck!
+
+--
+Jerrod Sutherland
+General Manager
+#1650 Bourbon St. WEM 8882 170 St. Edmonton, Alberta T5T-4M2
+(C) 780.964.0600`
+  },
+  {
+    id: 'acknowledgement',
+    name: 'Acknowledgement — First Reply to Any Inquiry',
+    icon: '👋',
+    color: 'var(--green)',
+    subject: 'Re: Your Inquiry — Five & Dive',
+    body: `Hey [NAME], thanks for reaching out to Five & Dive! We got your message and will get back to you shortly. We appreciate the interest and look forward to connecting.
+
+--
+Jerrod Sutherland
+General Manager
+#1650 Bourbon St. WEM 8882 170 St. Edmonton, Alberta T5T-4M2
+(C) 780.964.0600`
+  },
+  {
+    id: 'band_booking',
+    name: 'General Band Booking Inquiry',
+    icon: '🎵',
+    color: 'var(--gold)',
+    subject: 'Re: Playing at Five & Dive',
+    body: `Hey [NAME], thanks for reaching out! We book live bands every Friday and Saturday night, 9:30 PM to 1:30 AM. No cover charge — ever. We're always looking for great acts.
+
+Best way to be considered is to send over a link to your music (YouTube, Spotify, SoundCloud, whatever you've got) and let us know your availability. We'll take a listen and get back to you.
+
+--
+Jerrod Sutherland
+General Manager
+#1650 Bourbon St. WEM 8882 170 St. Edmonton, Alberta T5T-4M2
+(C) 780.964.0600`
+  },
+  {
+    id: 'collab_inquiry',
+    name: '3rd Party / Promo Collaboration',
+    icon: '🤝',
+    color: 'var(--blue)',
+    subject: 'Re: Collaboration Inquiry — Five & Dive',
+    body: `Hey [NAME], appreciate you thinking of us! We're always open to hearing about collaboration opportunities. Send over the details of what you have in mind and we'll take a look.
+
+--
+Jerrod Sutherland
+General Manager
+#1650 Bourbon St. WEM 8882 170 St. Edmonton, Alberta T5T-4M2
+(C) 780.964.0600`
+  },
+  {
+    id: 'next_round',
+    name: 'Next-Round Reply (AI — paste thread URL)',
+    icon: '🤖',
+    color: 'var(--blue)',
+    subject: '',
+    body: '',
+    isAI: true
+  }
+];
+
+// ── STATE ────────────────────────────────────────────────────
+let STATE = {
+  currentUser: '',
+  bandRecords: {},
+  pendingPromos: [],
+  approvedPromos: [],
+  calendarEvents: []
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORE_KEY);
+    if (s) STATE = Object.assign(STATE, JSON.parse(s));
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); } catch(e) {}
+}
+loadState();
+
+// ── API KEY ──────────────────────────────────────────────────
+function getApiKey() { return localStorage.getItem(API_KEY_STORE) || ''; }
+
+function saveApiKey() {
+  const input = document.getElementById('apiKeyInput');
+  const feedback = document.getElementById('keyFeedback');
+  const key = input.value.trim();
+  if (!key) { feedback.textContent = 'Please paste a key first.'; feedback.className = 'key-feedback err'; return; }
+  if (!key.startsWith('sk-ant-')) { feedback.textContent = "That doesn\u2019t look right \u2014 Anthropic keys start with sk-ant-"; feedback.className = 'key-feedback err'; return; }
+  localStorage.setItem(API_KEY_STORE, key);
+  feedback.textContent = '\u2713 Key saved! You\u2019re all set.';
+  feedback.className = 'key-feedback ok';
+  input.value = '';
+  updateApiKeyUI();
+  setTimeout(closeApiModal, 1200);
+}
+
+function openApiModal() {
+  document.getElementById('apiModal').classList.remove('hidden');
+  document.getElementById('keyFeedback').textContent = '';
+  document.getElementById('apiKeyInput').value = '';
+  setTimeout(() => document.getElementById('apiKeyInput').focus(), 100);
+}
+function closeApiModal() { document.getElementById('apiModal').classList.add('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+function updateApiKeyUI() {
+  const key = getApiKey();
+  const banner = document.getElementById('apiBanner');
+  const pill   = document.getElementById('apiStatusPill');
+  const setupBtn = document.getElementById('apiSetupBtn');
+  if (key) {
+    banner.style.display = 'none';
+    pill.style.display = 'inline-block';
+    setupBtn.style.display = 'none';
+  } else {
+    banner.style.display = 'flex';
+    pill.style.display = 'none';
+    setupBtn.style.display = 'inline-block';
+  }
+}
+
+document.getElementById('apiModal').addEventListener('click', e => { if (e.target === document.getElementById('apiModal')) closeApiModal(); });
+document.getElementById('apiKeyInput').addEventListener('keydown', e => { if (e.key === 'Enter') saveApiKey(); });
+
+// ── TAB NAVIGATION ───────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'queue') renderQueue();
+  if (tab === 'bands') renderBandRecords();
+  if (tab === 'templates') renderTemplates();
+  if (tab === 'dispatch') renderDispatchSelect();
+}
+
+// ── USER / PERMISSION ────────────────────────────────────────
+function onUserChange() {
+  STATE.currentUser = document.getElementById('currentUser').value;
+  saveState();
+}
+function isJerrod() { return STATE.currentUser === 'jerrod'; }
+
+// ── TOAST ────────────────────────────────────────────────────
+function toast(msg, type='ok') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ── PRESETS ─────────────────────────────────────────────────
+function renderPresets() {
+  const grid = document.getElementById('presetGrid');
+  grid.innerHTML = JUNE_EVENTS.map((e, i) => `
+    <button class="preset-btn" onclick="fillPreset(${i})">
+      <span>${e.band}</span>
+      <span class="dates">${e.fri} / ${e.sat}</span>
+    </button>`).join('');
+}
+renderPresets();
+
+function fillPreset(i) {
+  const e = JUNE_EVENTS[i];
+  document.getElementById('bandName').value = e.band;
+  document.getElementById('dateF').value = e.fri;
+  document.getElementById('dateS').value = e.sat;
+  document.getElementById('genre').value = e.genre;
+  document.getElementById('notes').value = '';
+  // Auto-fill from band records if available
+  const rec = getBandRecord(e.band);
+  if (rec) {
+    if (rec.contactEmail) document.getElementById('contactEmail').value = rec.contactEmail;
+    if (rec.instagram) document.getElementById('instagram').value = rec.instagram;
+  }
+}
+
+// ── BAND RECORDS ─────────────────────────────────────────────
+function normalizeBand(name) { return name.toLowerCase().replace(/[^a-z0-9]/g,''); }
+function getBandRecord(name) { return STATE.bandRecords[normalizeBand(name)] || null; }
+function upsertBandRecord(name, data) {
+  const key = normalizeBand(name);
+  STATE.bandRecords[key] = Object.assign(STATE.bandRecords[key] || { name, shows:[], dropboxLinks:[], instagramHandle:'' }, data);
+  if (!STATE.bandRecords[key].name) STATE.bandRecords[key].name = name;
+  saveState();
+}
+function addBandShow(name, date, assets) {
+  const key = normalizeBand(name);
+  if (!STATE.bandRecords[key]) upsertBandRecord(name, {});
+  const rec = STATE.bandRecords[key];
+  if (!rec.shows) rec.shows = [];
+  rec.shows.push({ date, assets, ts: new Date().toISOString() });
+  saveState();
+}
+
+function renderBandRecords() {
+  const list = document.getElementById('bandRecordsList');
+  const q = (document.getElementById('bandSearch').value||'').toLowerCase();
+  const records = Object.values(STATE.bandRecords).filter(r => !q || r.name.toLowerCase().includes(q));
+  if (!records.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-family:\'Barlow Condensed\',sans-serif;font-size:0.9rem;letter-spacing:2px;text-transform:uppercase;padding:40px 0;text-align:center">No band records yet</div>';
+    return;
+  }
+  list.innerHTML = records.map(r => `
+    <div class="band-card">
+      <div class="band-card-header">
+        <div class="band-name-big">${escHtml(r.name)}</div>
+        <div style="display:flex;gap:6px">
+          <span class="pill green">${(r.shows||[]).length} show(s)</span>
+          ${r.instagramHandle ? '<span class="pill blue">'+escHtml(r.instagramHandle)+'</span>' : ''}
+        </div>
+      </div>
+      <div class="band-meta">
+        ${r.contactEmail ? '<div class="band-meta-item"><strong>Email:</strong> '+escHtml(r.contactEmail)+'</div>' : ''}
+        ${r.genre ? '<div class="band-meta-item"><strong>Genre:</strong> '+escHtml(r.genre)+'</div>' : ''}
+      </div>
+      ${(r.dropboxLinks||[]).length ? '<div class="band-links">'+(r.dropboxLinks.map(l=>`<a class="band-link" href="${escHtml(l.url)}" target="_blank">🎨 ${escHtml(l.label||'Ryan Design')}</a>`).join(''))+'</div>' : ''}
+      ${(r.shows||[]).length ? '<div class="band-history">'+(r.shows.slice(-3).reverse().map(s=>`<div class="history-row"><span class="history-date">${escHtml(s.date||'')}</span><span>${escHtml(s.assets||'Promo generated')}</span></div>`).join(''))+'</div>' : ''}
+    </div>`).join('');
+}
+
+// ── GMAIL THREAD READER ──────────────────────────────────────
+let _threadExtractData = null;
+
+async function readThread() {
+  const url = document.getElementById('threadUrl').value.trim();
+  const status = document.getElementById('threadStatus');
+  if (!url) { status.textContent = 'Paste a Gmail URL first.'; status.className = 'thread-status err'; return; }
+  const apiKey = getApiKey();
+  if (!apiKey) { openApiModal(); return; }
+
+  status.textContent = 'Reading thread...';
+  status.className = 'thread-status loading';
+
+  try {
+    // Extract thread ID from Gmail URL
+    const threadId = extractGmailThreadId(url);
+    if (!threadId) throw new Error('Could not parse thread ID from URL');
+
+    // Fetch thread via Gmail MCP through Claude
+    const prompt = `I need you to help extract information from a Gmail thread. The Gmail thread ID or URL fragment is: ${url}
+
+Please search Gmail for this thread and extract the following information in JSON format:
+- bandName: the name of the band or artist
+- contactEmail: their email address  
+- genre: their music genre or style if mentioned
+- instagram: their Instagram handle if mentioned
+- dates: any show dates mentioned
+- notes: any important notes (equipment needs, song style, etc.)
+- dropboxLinks: any Dropbox or Google Drive links in the thread
+- threadSummary: 2-sentence summary of the conversation
+
+If you cannot access Gmail or find the thread, return your best extraction from just the URL context.
+Return ONLY valid JSON, no markdown fences.`;
+
+    const resp = await callClaude(prompt);
+    let extracted = {};
+    try {
+      const clean = resp.replace(/\`\`\`json|\`\`\`/g, '').trim();
+      extracted = JSON.parse(clean);
+    } catch(e) {
+      extracted = { threadSummary: resp, bandName: '', contactEmail: '', genre: '', instagram: '', dates: '', notes: '', dropboxLinks: [] };
+    }
+
+    _threadExtractData = extracted;
+
+    // Show in modal
+    document.getElementById('threadExtract').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        ${makeExtractField('Band / Artist', extracted.bandName, 'bandName')}
+        ${makeExtractField('Contact Email', extracted.contactEmail, 'contactEmail')}
+        ${makeExtractField('Genre', extracted.genre, 'genre')}
+        ${makeExtractField('Instagram', extracted.instagram, 'instagram')}
+        ${makeExtractField('Show Dates', extracted.dates, 'extractDates')}
+      </div>
+      <div class="draft-field"><label>Notes</label><textarea id="extractNotes" style="min-height:80px">${escHtml(extracted.notes||'')}</textarea></div>
+      ${extracted.threadSummary ? '<div class="callout blue" style="margin-top:10px"><strong>Summary:</strong> '+escHtml(extracted.threadSummary)+'</div>' : ''}
+      ${(extracted.dropboxLinks||[]).length ? '<div class="callout"><strong>Dropbox links found:</strong> '+extracted.dropboxLinks.map(l=>`<a href="${escHtml(l)}" target="_blank" style="color:var(--gold)">${escHtml(l)}</a>`).join(', ')+'</div>' : ''}
+    `;
+
+    document.getElementById('threadModal').classList.remove('hidden');
+    status.textContent = '\u2713 Thread read successfully';
+    status.className = 'thread-status ok';
+
+    // Auto-save Dropbox links to band record
+    if (extracted.bandName && (extracted.dropboxLinks||[]).length) {
+      upsertBandRecord(extracted.bandName, {
+        dropboxLinks: (extracted.dropboxLinks||[]).map(l => ({ url: l, label: 'Ryan Design', date: new Date().toLocaleDateString() }))
+      });
+    }
+
+  } catch(e) {
+    status.textContent = 'Error: ' + e.message;
+    status.className = 'thread-status err';
+  }
+}
+
+function extractGmailThreadId(url) {
+  const m = url.match(/[#/]([a-f0-9]{16,})/);
+  return m ? m[1] : url;
+}
+
+function makeExtractField(label, value, id) {
+  return `<div class="draft-field"><label>${label}</label><input type="text" id="${id}" value="${escAttr(value||'')}"/></div>`;
+}
+
+function applyThreadExtract() {
+  const get = id => (document.getElementById(id)||{}).value || '';
+  const band = get('bandName');
+  const email = get('contactEmail');
+  const genre = get('genre');
+  const ig = get('instagram');
+  const notes = get('extractNotes');
+
+  if (band) document.getElementById('bandName').value = band;
+  if (email) document.getElementById('contactEmail').value = email;
+  if (genre) document.getElementById('genre').value = genre;
+  if (ig) document.getElementById('instagram').value = ig;
+  if (notes) document.getElementById('notes').value = notes;
+
+  // Save to band records
+  if (band) {
+    upsertBandRecord(band, { contactEmail: email, genre, instagramHandle: ig });
+    if (_threadExtractData && (_threadExtractData.dropboxLinks||[]).length) {
+      upsertBandRecord(band, { dropboxLinks: _threadExtractData.dropboxLinks.map(l=>({url:l,label:'Ryan Design',date:new Date().toLocaleDateString()})) });
+    }
+  }
+
+  closeModal('threadModal');
+  switchTab('generate');
+  toast('Form filled from thread!');
+}
+
+// ── CALENDAR SCAN ────────────────────────────────────────────
+async function scanCalendar() {
+  const calList = document.getElementById('calendarList');
+  const presets = document.getElementById('calendarPresets');
+
+  calList.innerHTML = '<div class="loader"><div class="spinner"></div><span>Scanning Google Calendar...</span></div>';
+  presets.innerHTML = '<div class="loader"><div class="spinner"></div><span>Loading...</span></div>';
+
+  const apiKey = getApiKey();
+  if (!apiKey) { openApiModal(); return; }
+
+  try {
+    const prompt = `Please check my Google Calendar (jerrod@fiveanddive.ca) for all events in the next 60 days. 
+Look specifically for Friday and Saturday night events that appear to be live music bookings at Five & Dive.
+Return ONLY valid JSON (no markdown) in this format:
+{"events": [{"name": "Band Name", "date": "YYYY-MM-DD", "dayOfWeek": "Friday", "notes": "any notes"}]}
+If you cannot access the calendar, return {"events": [], "error": "Calendar not connected"}`;
+
+    const resp = await callClaude(prompt);
+    let data = { events: [] };
+    try {
+      const clean = resp.replace(/\`\`\`json|\`\`\`/g,'').trim();
+      data = JSON.parse(clean);
+    } catch(e) {}
+
+    STATE.calendarEvents = data.events || [];
+    saveState();
+
+    renderCalendarPage(data.events || []);
+    renderCalendarPresets(data.events || []);
+
+    if (data.error) {
+      toast('Calendar: ' + data.error, 'warn');
+    } else {
+      toast(`Found ${(data.events||[]).length} upcoming show(s)`);
+    }
+  } catch(e) {
+    calList.innerHTML = '<div class="callout red"><strong>Error scanning calendar:</strong> ' + escHtml(e.message) + '</div>';
+    presets.innerHTML = '<div style="font-size:0.8rem;color:var(--dim);padding:6px 0">Calendar scan failed</div>';
+  }
+}
+
+function renderCalendarPage(events) {
+  const list = document.getElementById('calendarList');
+  if (!events.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-family:\'Barlow Condensed\',sans-serif;font-size:0.9rem;letter-spacing:2px;text-transform:uppercase;padding:40px 0;text-align:center">No upcoming shows found in calendar</div>';
+    return;
+  }
+  const approved = (STATE.approvedPromos||[]).map(p => normalizeBand(p.band));
+  list.innerHTML = events.map(e => {
+    const hasPromo = approved.includes(normalizeBand(e.name||''));
+    return `<div class="cal-event ${hasPromo?'has-promo':'needs-promo'}">
+      <div>
+        <div class="cal-event-name">${escHtml(e.name||'Unknown')}</div>
+        <div class="cal-event-date">${escHtml(e.dayOfWeek||'')} · ${escHtml(e.date||'')}${e.notes?(' · '+escHtml(e.notes)):''}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        ${hasPromo ? '<span class="pill green">✓ Promod</span>' : '<span class="pill red">No promo</span>'}
+        ${!hasPromo ? `<button class="btn-ghost" onclick="prefillFromCalendar('${escAttr(e.name||'')}','${escAttr(e.date||'')}')">Start Promo →</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCalendarPresets(events) {
+  const presets = document.getElementById('calendarPresets');
+  if (!events.length) { presets.innerHTML = '<div style="font-size:0.78rem;color:var(--dim);padding:4px 0">No upcoming events found</div>'; return; }
+  const approved = (STATE.approvedPromos||[]).map(p => normalizeBand(p.band));
+  presets.innerHTML = events.slice(0,5).map((e,i) => {
+    const hasPromo = approved.includes(normalizeBand(e.name||''));
+    return `<button class="preset-btn calendar-event ${hasPromo?'':'needs-promo'}" onclick="prefillFromCalendar('${escAttr(e.name||'')}','${escAttr(e.date||'')}')">
+      <span>${escHtml(e.name||'Unknown')}</span>
+      <span class="dates">${escHtml(e.date||'')}${hasPromo?' ✓':''}</span>
+    </button>`;
+  }).join('');
+}
+
+function prefillFromCalendar(name, date) {
+  document.getElementById('bandName').value = name;
+  const d = new Date(date);
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const fri = `${months[d.getMonth()]} ${d.getDate()}`;
+  const satD = new Date(d); satD.setDate(satD.getDate()+1);
+  const sat = `${months[satD.getMonth()]} ${satD.getDate()}`;
+  document.getElementById('dateF').value = fri;
+  document.getElementById('dateS').value = sat;
+  const rec = getBandRecord(name);
+  if (rec) {
+    if (rec.contactEmail) document.getElementById('contactEmail').value = rec.contactEmail;
+    if (rec.instagramHandle) document.getElementById('instagram').value = rec.instagramHandle;
+    if (rec.genre) document.getElementById('genre').value = rec.genre;
+  }
+  switchTab('generate');
+  toast('Form filled from calendar!');
+}
+
+// ── CLAUDE API CALL ──────────────────────────────────────────
+async function callClaude(prompt) {
+  const apiKey = getApiKey();
+  if (!apiKey) { openApiModal(); throw new Error('No API key'); }
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] })
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      openApiModal();
+      const fb = document.getElementById('keyFeedback');
+      if (fb) { fb.textContent = 'Key rejected — paste a fresh one.'; fb.className = 'key-feedback err'; }
+    }
+    throw new Error(data?.error?.message || 'API error ' + res.status);
+  }
+  return data.content?.[0]?.text || '';
+}
+
+// ── GENERATE WRITE-UP ────────────────────────────────────────
+async function getWriteup(band, fri, sat, genre, notes) {
+  const prompt = `You are writing promotional event copy for Five & Dive, a rock 'n' roll dive bar at West Edmonton Mall, Edmonton Alberta. Tagline: "Food, Booze, Rock & Roll." All food under $15. No cover charge — EVER. Music starts at 9:30pm and goes until 1:30am Friday and Saturday nights. Phone: (780) 444-DIVE (3483). Website: fiveanddive.ca.
+
+Write a punchy, energetic Squarespace event description (2-3 short paragraphs) for:
+Band: ${band}
+Dates: ${fri} & ${sat}, 2026
+Genre/Style: ${genre || 'Rock/Cover Band'}
+Extra notes: ${notes || 'None'}
+
+Keep it hype, bar-appropriate, and fun. Mention no cover charge, 9:30pm start, and the bar's vibe. Output ONLY the event description text — no title, no markdown, no JSON.`;
+  return callClaude(prompt);
+}
+
+// ── THUMBNAIL ────────────────────────────────────────────────
+function drawThumbnail(band, fri, sat) {
+  const canvas = document.getElementById('thumbCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 1920, H = 1080;
+  ctx.clearRect(0, 0, W, H);
+  const bg = ctx.createRadialGradient(W*0.3,H*0.4,0,W*0.5,H*0.5,W*0.8);
+  bg.addColorStop(0,'#6b0010'); bg.addColorStop(0.5,'#300008'); bg.addColorStop(1,'#080808');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+  ctx.save(); ctx.globalAlpha=0.12; ctx.fillStyle='#c8102e';
+  ctx.beginPath(); ctx.moveTo(0,H*0.6); ctx.lineTo(W*0.65,0); ctx.lineTo(W*0.75,0); ctx.lineTo(0,H*0.7); ctx.fill(); ctx.restore();
+  ctx.save(); ctx.globalAlpha=0.03;
+  for(let i=0;i<4000;i++){ctx.fillStyle=Math.random()>0.5?'#fff':'#c8102e';ctx.fillRect(Math.random()*W,Math.random()*H,2,2);}
+  ctx.restore();
+  ctx.fillStyle='#c8102e'; ctx.fillRect(0,0,W,8);
+  ctx.font="bold 52px 'Arial Narrow',Arial,sans-serif"; ctx.fillStyle='#ffffff'; ctx.globalAlpha=0.9;
+  ctx.fillText('FIVE & DIVE',80,100);
+  ctx.font="28px Arial,sans-serif"; ctx.fillStyle='rgba(255,255,255,0.55)';
+  ctx.fillText('Food \u00b7 Booze \u00b7 Rock \u2019N\u2019 Roll \u00b7 West Edmonton Mall',80,140);
+  ctx.globalAlpha=1;
+  const bandUpper = band.toUpperCase();
+  let fontSize=220;
+  ctx.font=`bold ${fontSize}px 'Arial Black',Arial,sans-serif`;
+  while(ctx.measureText(bandUpper).width>W-160&&fontSize>60){fontSize-=8;ctx.font=`bold ${fontSize}px 'Arial Black',Arial,sans-serif`;}
+  ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fillText(bandUpper,84,H*0.62+6);
+  const grad=ctx.createLinearGradient(80,0,80+ctx.measureText(bandUpper).width,0);
+  grad.addColorStop(0,'#ffffff'); grad.addColorStop(0.5,'#f0a500'); grad.addColorStop(1,'#c8102e');
+  ctx.fillStyle=grad; ctx.fillText(bandUpper,80,H*0.62);
+  ctx.fillStyle='rgba(200,16,46,0.7)'; roundRect(ctx,76,H*0.68,W-152,4,2); ctx.fill();
+  ctx.font="bold 62px 'Arial Narrow',Arial,sans-serif"; ctx.fillStyle='#f0a500';
+  ctx.fillText(`${fri.toUpperCase()} & ${sat.toUpperCase()}, 2026`,80,H*0.77);
+  ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.fillRect(0,H-100,W,100);
+  ctx.fillStyle='#f0a500'; ctx.font="bold 32px Arial,sans-serif";
+  ctx.fillText('MUSIC STARTS AT 9:30PM',80,H-52);
+  ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font="26px Arial,sans-serif";
+  ctx.fillText('NO COVER \u00b7 EVER  |  (780) 444-DIVE  |  fiveanddive.ca',80,H-18);
+  ctx.fillStyle='#c8102e'; ctx.fillRect(0,H-8,W,8);
+  return canvas.toDataURL('image/png');
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);
+  ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
+}
+
+// ── BUILD RESULT CARD ────────────────────────────────────────
+function buildCard(band, fri, sat, writeup, imgData, pendingId) {
+  const id = 'card-' + Date.now() + Math.random().toString(36).slice(2);
+  const card = document.createElement('div');
+  card.className = 'result-card';
+  card.id = id;
+  const isJerrodUser = isJerrod();
+
+  card.innerHTML = `
+    <div class="result-header">
+      <div>
+        <div class="result-band">${escHtml(band)}</div>
+        <div class="result-dates">${escHtml(fri)} &amp; ${escHtml(sat)}, 2026 &middot; Music 9:30PM &middot; No Cover</div>
+      </div>
+      ${pendingId ? '<span class="pill gold">Pending Approval</span>' : '<span class="pill green">Ready</span>'}
+    </div>
+    <div class="result-body">
+      <div class="thumbnail-section">
+        <div class="section-title">Thumbnail (1920\u00d71080)</div>
+        <div class="thumbnail-preview"><img src="${imgData}" alt="${escAttr(band)} thumbnail"/></div>
+        <div class="dl-btns">
+          <a class="dl-btn primary" href="${imgData}" download="${escAttr(band.replace(/\s+/g,'_'))}_thumbnail.png">\u2b07 Download PNG</a>
+          <button class="dl-btn" onclick="copyImgToClip('${id}')">Copy Image</button>
+        </div>
+      </div>
+      <div class="writeup-section">
+        <div class="section-title">Squarespace Write-Up</div>
+        <div class="writeup-box" id="writeup-${id}">${escHtml(writeup)}</div>
+        <button class="copy-btn" id="copybtn-${id}" onclick="copyWriteup('${id}')">Copy Text</button>
+      </div>
+    </div>
+    <div class="card-actions">
+      <span class="info">${isJerrodUser ? 'Your promo \u2014 approve to unlock dispatch checklist' : 'Submitted for Jerrod\u2019s approval'}</span>
+      ${isJerrodUser && pendingId ? `<button class="btn-sm danger" onclick="rejectPromo('${escAttr(pendingId)}','${id}')">Reject</button><button class="btn-sm approve" onclick="approvePromo('${escAttr(pendingId)}','${id}','${escAttr(band)}','${escAttr(fri)}','${escAttr(sat)}','${escAttr(writeup.substring(0,100))}','${escAttr(imgData.substring(0,50))}')">&#10003; Approve &amp; Launch</button>` : ''}
+      ${isJerrodUser && !pendingId ? `<button class="btn-sm approve" onclick="directApprove('${id}','${escAttr(band)}','${escAttr(fri)}','${escAttr(sat)}','${escAttr(writeup.substring(0,100))}','${escAttr(imgData.substring(0,50))}')">&#10003; Approve &amp; Go to Dispatch</button>` : ''}
+    </div>`;
+  return card;
+}
+
+// ── GENERATE ONE ─────────────────────────────────────────────
+async function generateOne() {
+  const band  = document.getElementById('bandName').value.trim();
+  const fri   = document.getElementById('dateF').value.trim();
+  const sat   = document.getElementById('dateS').value.trim();
+  const genre = document.getElementById('genre').value.trim();
+  const notes = document.getElementById('notes').value.trim();
+  const contactEmail = document.getElementById('contactEmail').value.trim();
+  const instagram = document.getElementById('instagram').value.trim();
+
+  if (!band) { toast('Please enter a band name', 'warn'); return; }
+  if (!STATE.currentUser) { toast('Select who you are first', 'warn'); return; }
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true; btn.textContent = 'Generating...';
+  document.getElementById('emptyState')?.remove();
+
+  const loader = document.createElement('div');
+  loader.className = 'loader'; loader.id = 'loader-one';
+  loader.innerHTML = `<div class="spinner"></div><span>Generating for ${escHtml(band)}\u2026</span>`;
+  document.getElementById('outputPanel').prepend(loader);
+
+  try {
+    const [writeup, imgData] = await Promise.all([
+      getWriteup(band, fri, sat, genre, notes),
+      Promise.resolve(drawThumbnail(band, fri, sat))
+    ]);
+    loader.remove();
+
+    // Save/update band record
+    upsertBandRecord(band, { contactEmail, instagramHandle: instagram, genre });
+
+    let pendingId = null;
+    if (!isJerrod()) {
+      // Payton — goes to queue
+      pendingId = 'pq_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+      STATE.pendingPromos.push({ id: pendingId, band, fri, sat, genre, writeup, imgData, contactEmail, instagram, submittedBy: 'Payton Smith', ts: new Date().toISOString() });
+      saveState();
+      updateQueueBadge();
+      toast('Promo submitted for approval!', 'ok');
+    }
+
+    const card = buildCard(band, fri, sat, writeup, imgData, pendingId);
+    document.getElementById('outputPanel').prepend(card);
+  } catch(e) {
+    loader.remove();
+    if (!e.message.includes('API key')) toast('Error generating: ' + e.message, 'err');
+  }
+
+  btn.disabled = false; btn.textContent = '\u26A1 Generate Promo';
+}
+
+// ── GENERATE ALL ─────────────────────────────────────────────
+async function generateAll() {
+  if (!STATE.currentUser) { toast('Select who you are first', 'warn'); return; }
+  const btn = document.getElementById('batchBtn');
+  btn.disabled = true; btn.textContent = 'Generating all...';
+  document.getElementById('emptyState')?.remove();
+
+  for (const e of JUNE_EVENTS) {
+    const loader = document.createElement('div');
+    loader.className = 'loader';
+    loader.innerHTML = `<div class="spinner"></div><span>Generating ${escHtml(e.band)}\u2026</span>`;
+    document.getElementById('outputPanel').appendChild(loader);
+    try {
+      const [writeup, imgData] = await Promise.all([
+        getWriteup(e.band, e.fri, e.sat, e.genre, ''),
+        Promise.resolve(drawThumbnail(e.band, e.fri, e.sat))
+      ]);
+      loader.remove();
+      upsertBandRecord(e.band, { genre: e.genre });
+      const card = buildCard(e.band, e.fri, e.sat, writeup, imgData, null);
+      document.getElementById('outputPanel').appendChild(card);
+    } catch(err) { loader.textContent = 'Failed: ' + e.band; }
+  }
+  btn.disabled = false; btn.textContent = '\uD83C\uDFB8 Generate All June Events';
+}
+
+// ── APPROVAL FLOW ────────────────────────────────────────────
+function updateQueueBadge() {
+  const count = (STATE.pendingPromos||[]).length;
+  document.getElementById('queueCount').textContent = count;
+  document.getElementById('queueBanner').style.display = count > 0 ? 'flex' : 'none';
+}
+
+function renderQueue() {
+  const list = document.getElementById('queueList');
+  const pending = STATE.pendingPromos || [];
+  if (!pending.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-family:\'Barlow Condensed\',sans-serif;font-size:0.9rem;letter-spacing:2px;text-transform:uppercase;padding:40px 0;text-align:center">No promos pending approval</div>';
+    return;
+  }
+  list.innerHTML = pending.map(p => `
+    <div class="queue-card">
+      <div class="queue-card-header">
+        <div>
+          <div class="result-band" style="font-size:1.3rem">${escHtml(p.band)}</div>
+          <div class="result-dates">${escHtml(p.fri)} &amp; ${escHtml(p.sat)}, 2026</div>
+        </div>
+        <div>
+          <div class="queue-by">Submitted by ${escHtml(p.submittedBy||'Payton')}</div>
+          <div class="queue-by">${new Date(p.ts||'').toLocaleDateString()}</div>
+        </div>
+      </div>
+      ${p.imgData ? `<div style="padding:12px 16px"><img src="${p.imgData}" style="width:100%;max-height:200px;object-fit:cover;border-radius:6px;border:1px solid var(--border)"/></div>` : ''}
+      <div style="padding:12px 16px;font-size:0.85rem;color:#bbb;line-height:1.6;border-top:1px solid var(--border)">${escHtml((p.writeup||'').substring(0,300))}&hellip;</div>
+      <div class="queue-actions">
+        <button class="btn-sm danger" onclick="rejectFromQueue('${escAttr(p.id)}')">✕ Reject</button>
+        <button class="btn-sm approve" onclick="approveFromQueue('${escAttr(p.id)}')">✓ Approve &amp; Launch</button>
+      </div>
+    </div>`).join('');
+}
+
+function approveFromQueue(id) {
+  const p = (STATE.pendingPromos||[]).find(x => x.id === id);
+  if (!p) return;
+  STATE.pendingPromos = STATE.pendingPromos.filter(x => x.id !== id);
+  _approvePromo(p.band, p.fri, p.sat, p.writeup, p.imgData, p.contactEmail, p.instagram);
+  renderQueue();
+  updateQueueBadge();
+  toast('Promo approved! Go to Launch Checklist.');
+  switchTab('dispatch');
+}
+
+function rejectFromQueue(id) {
+  STATE.pendingPromos = (STATE.pendingPromos||[]).filter(x => x.id !== id);
+  saveState();
+  renderQueue();
+  updateQueueBadge();
+  toast('Promo rejected', 'warn');
+}
+
+function approvePromo(pendingId, cardId, band, fri, sat, writeupSnip, imgSnip) {
+  const p = (STATE.pendingPromos||[]).find(x => x.id === pendingId);
+  if (p) {
+    STATE.pendingPromos = STATE.pendingPromos.filter(x => x.id !== pendingId);
+    _approvePromo(p.band, p.fri, p.sat, p.writeup, p.imgData, p.contactEmail, p.instagram);
+  }
+  updateQueueBadge();
+  const card = document.getElementById(cardId);
+  if (card) { const acts = card.querySelector('.card-actions'); if(acts) acts.innerHTML = '<span class="pill green">✓ Approved</span><span class="info" style="margin-left:8px">Go to Launch Checklist to send drafts</span><button class="btn-sm" onclick="switchTab(\'dispatch\')">Go to Dispatch →</button>'; }
+  toast('Approved! Dispatch checklist ready.');
+}
+
+function directApprove(cardId, band, fri, sat, writeupSnip, imgSnip) {
+  const card = document.getElementById(cardId);
+  const writeupEl = document.getElementById('writeup-' + cardId);
+  const writeup = writeupEl ? writeupEl.innerText : '';
+  const img = card ? (card.querySelector('img')||{}).src : '';
+  const email = document.getElementById('contactEmail').value;
+  const ig = document.getElementById('instagram').value;
+  _approvePromo(band, fri, sat, writeup, img, email, ig);
+  if (card) { const acts = card.querySelector('.card-actions'); if(acts) acts.innerHTML = '<span class="pill green">✓ Approved</span><button class="btn-sm" style="margin-left:8px" onclick="switchTab(\'dispatch\')">Go to Dispatch →</button>'; }
+  toast('Approved! Dispatch checklist ready.');
+  setTimeout(() => switchTab('dispatch'), 800);
+}
+
+function _approvePromo(band, fri, sat, writeup, imgData, contactEmail, instagram) {
+  const promo = { id: 'ap_'+Date.now().toString(36), band, fri, sat, writeup, imgData, contactEmail, instagram, approvedAt: new Date().toISOString() };
+  if (!STATE.approvedPromos) STATE.approvedPromos = [];
+  STATE.approvedPromos.unshift(promo);
+  addBandShow(band, `${fri} & ${sat}`, 'Promo generated, approved');
+  upsertBandRecord(band, { contactEmail, instagramHandle: instagram });
+  saveState();
+  renderDispatchSelect();
+}
+
+// ── DISPATCH / LAUNCH CHECKLIST ──────────────────────────────
+function renderDispatchSelect() {
+  const sel = document.getElementById('dispatchSelect');
+  if (!sel) return;
+  const promos = STATE.approvedPromos || [];
+  sel.innerHTML = '<option value="">— Choose a promo —</option>' +
+    promos.map(p => `<option value="${escAttr(p.id)}">${escHtml(p.band)} · ${escHtml(p.fri)} &amp; ${escHtml(p.sat)}</option>`).join('');
+}
+
+function loadDispatch() {
+  const id = document.getElementById('dispatchSelect').value;
+  if (!id) { document.getElementById('dispatchContent').style.display = 'none'; return; }
+  const p = (STATE.approvedPromos||[]).find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('dispatchContent').style.display = 'block';
+
+  const dateStr = `${p.fri} & ${p.sat}, 2026`;
+  const fileBase = `F&D-LiveMusic-${new Date().toLocaleDateString('en-CA',{month:'2-digit',year:'2-digit'}).replace('-','')}_Poster`;
+
+  // PRINTER EMAIL
+  document.getElementById('printerSubject').value = `Five & Dive — Print Request · ${p.band} · ${dateStr}`;
+  document.getElementById('printerBody').value = `Hey Travis,
+
+Hope you're doing well! I have a new show coming up and need some print work done.
+
+Show: ${p.band}
+Dates: ${dateStr}
+Music starts 9:30 PM — No Cover
+
+Formats needed:
+- Window Poster (24×18")
+- Bar Poster (11×17")
+
+I'll send over the design files from Ryan once they're ready. File naming will follow the usual convention: ${fileBase}_SIZERx.pdf
+
+Can you confirm receipt and let me know your turnaround time?
+
+Thanks!
+
+--
+Jerrod Sutherland
+General Manager
+#1650 Bourbon St. WEM 8882 170 St. Edmonton, Alberta T5T-4M2
+(C) 780.964.0600`;
+
+  // PERFORMER EMAIL
+  document.getElementById('performerTo').value = p.contactEmail || '';
+  document.getElementById('performerSubject').value = `Five & Dive — You're Confirmed! ${p.band} · ${dateStr}`;
+  document.getElementById('performerBody').value = `Hey ${p.band},
+
+Just confirming your upcoming shows at Five & Dive — we're excited to have you!
+
+Show dates: ${dateStr}
+Load-in: Please arrive by 8:30 PM with gear loaded
+Music starts: 9:30 PM
+Last call: 1:30 AM
+Address: #1650 Bourbon St. WEM, 8882 170 St., Edmonton, Alberta T5T-4M2
+
+Reminder — we're promoting the show on our socials. Follow and share from @fiveanddivewem on Instagram and Five & Dive on Facebook to help spread the word.
+
+Any questions give me a shout. See you there!
+
+--
+Jerrod Sutherland
+General Manager
+#1650 Bourbon St. WEM 8882 170 St. Edmonton, Alberta T5T-4M2
+(C) 780.964.0600`;
+
+  // SQUARESPACE
+  document.getElementById('squareTitle').value = `${p.band} · Live at Five & Dive`;
+  document.getElementById('squareBody').value = p.writeup || '';
+
+  // RYAN EMAIL
+  document.getElementById('ryanSubject').value = `Five & Dive — Design Request · ${p.band} · ${dateStr}`;
+  document.getElementById('ryanBody').value = `Hey Ryan,
+
+New show lined up — need some design work!
+
+Band: ${p.band}
+Dates: ${dateStr}
+Genre: ${p.genre || 'Rock/Cover Band'}
+
+Formats needed:
+- Bar Poster (11×17" — 3300×5100px, 300dpi)
+- Window Poster (24×18" — 7200×5400px, 300dpi)
+- IG Square (1080×1080px)
+- IG Story (1080×1920px)
+
+I've attached the thumbnail for reference. Same vibe as usual — Five & Dive branding, dark/red/gold, band name front and centre.
+
+File naming: ${fileBase}_SIZERx.pdf
+
+Let me know when you have a first draft ready. Thanks!
+
+--
+Jerrod Sutherland
+General Manager
+#1650 Bourbon St. WEM 8882 170 St. Edmonton, Alberta T5T-4M2
+(C) 780.964.0600`;
+
+  // Check Ryan history
+  const rec = getBandRecord(p.band);
+  const ryanLinks = (rec && rec.dropboxLinks) ? rec.dropboxLinks : [];
+  const ryanHist = document.getElementById('ryanHistory');
+  const ryanPill = document.getElementById('ryanHistoryPill');
+  if (ryanLinks.length) {
+    ryanPill.className = 'pill gold';
+    ryanPill.textContent = ryanLinks.length + ' past design(s) found';
+    ryanHist.innerHTML = '<div class="callout"><strong>Past designs from Ryan for this band:</strong><br>' +
+      ryanLinks.map(l=>`<a href="${escAttr(l.url)}" target="_blank" style="color:var(--gold);display:block;margin-top:4px">🔗 ${escHtml(l.label||'Design')} — ${escHtml(l.date||'')}</a>`).join('') + '</div>';
+  } else {
+    ryanPill.className = 'pill';
+    ryanPill.textContent = 'No past designs on file';
+    ryanHist.innerHTML = '<div style="font-size:0.82rem;color:var(--muted);margin-bottom:8px">No previous Ryan designs found for this band. First time? Send him the thumbnail from the Generate tab as a reference.</div>';
+  }
+}
+
+function toggleDraft(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function copyDraft(subjectId, bodyId) {
+  const sub = document.getElementById(subjectId)?.value || '';
+  const body = document.getElementById(bodyId)?.value || '';
+  navigator.clipboard.writeText(`Subject: ${sub}\n\n${body}`).then(() => toast('Email draft copied!'));
+}
+
+function copyField(id) {
+  const el = document.getElementById(id);
+  const text = el?.value || el?.innerText || '';
+  navigator.clipboard.writeText(text).then(() => toast('Copied!'));
+}
+
+function openGmailDraft(toId, subjectId, bodyId) {
+  const to = encodeURIComponent(document.getElementById(toId)?.value || '');
+  const sub = encodeURIComponent(document.getElementById(subjectId)?.value || '');
+  const body = encodeURIComponent(document.getElementById(bodyId)?.value || '');
+  window.open(`https://mail.google.com/mail/u/0/?view=cm&to=${to}&su=${sub}&body=${body}`, '_blank');
+}
+
+// ── EMAIL TEMPLATES PAGE ─────────────────────────────────────
+let _activeTemplateId = null;
+
+function renderTemplates() {
+  const list = document.getElementById('templateList');
+  list.innerHTML = TEMPLATES.map(t => `
+    <div class="template-card">
+      <div class="template-header" onclick="toggleTemplate('tmpl-${t.id}')">
+        <span style="font-size:1.1rem">${t.icon}</span>
+        <div class="template-name" style="color:${t.color}">${escHtml(t.name)}</div>
+        <button class="btn-sm" onclick="event.stopPropagation();openTemplate('${t.id}')">Use Template</button>
+        <span style="color:var(--muted);font-size:0.8rem">▼</span>
+      </div>
+      <div class="template-body" id="tmpl-${t.id}">
+        ${t.isAI ? '<div class="callout blue"><strong>AI-powered:</strong> Paste a Gmail thread URL and Claude will read the conversation and draft your next reply contextually — not a fixed template.</div>' : `<div class="template-text">${escHtml(t.body)}</div>`}
+      </div>
+    </div>`).join('');
+}
+
+function toggleTemplate(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('open');
+}
+
+function openTemplate(id) {
+  const t = TEMPLATES.find(x => x.id === id);
+  if (!t) return;
+  _activeTemplateId = id;
+  document.getElementById('templateModalTitle').textContent = t.icon + ' ' + t.name;
+  document.getElementById('templateModalSub').textContent = t.isAI ? 'Paste a Gmail URL to generate a contextual reply' : 'Fill in the name and date, then copy or open in Gmail';
+  document.getElementById('tmplName').value = '';
+  document.getElementById('tmplDate').value = '';
+  document.getElementById('tmplPreview').value = t.isAI ? '' : t.body;
+  document.getElementById('templateModal').classList.remove('hidden');
+}
+
+async function fillTemplate() {
+  const t = TEMPLATES.find(x => x.id === _activeTemplateId);
+  if (!t) return;
+  const name = document.getElementById('tmplName').value.trim();
+  const date = document.getElementById('tmplDate').value.trim();
+
+  if (t.isAI) {
+    // Next-round reply — use thread URL + Claude
+    const threadUrl = document.getElementById('threadUrl').value.trim();
+    if (!threadUrl) {
+      document.getElementById('tmplPreview').value = 'Paste a Gmail thread URL in the Generate tab first, then come back here.';
+      return;
+    }
+    document.getElementById('tmplPreview').value = 'Generating contextual reply...';
+    try {
+      const prompt = `You are drafting an email reply on behalf of Jerrod Sutherland, General Manager of Five & Dive bar in Edmonton Alberta.
+Read this Gmail thread URL or ID: ${threadUrl}
+Draft a professional, friendly next reply that continues the conversation naturally. Keep Jerrod's casual-professional tone.
+Context: Five & Dive books live bands Fri & Sat 9:30PM, no cover, food under $15, @fiveanddivewem on Instagram.
+End with the signature:
+--
+Jerrod Sutherland
+General Manager
+#1650 Bourbon St. WEM 8882 170 St. Edmonton, Alberta T5T-4M2
+(C) 780.964.0600
+Return ONLY the email body text, no subject line.`;
+      const reply = await callClaude(prompt);
+      document.getElementById('tmplPreview').value = reply;
+    } catch(e) { document.getElementById('tmplPreview').value = 'Error: ' + e.message; }
+    return;
+  }
+
+  // Fill standard template
+  let body = t.body;
+  if (name) body = body.replace(/\[NAME\]/g, name);
+  if (date) body = body.replace(/\[DATE\/NIGHT\]/g, date).replace(/\[DATE\]/g, date);
+  document.getElementById('tmplPreview').value = body;
+}
+
+function openGmailFromTemplate() {
+  const sub = encodeURIComponent(TEMPLATES.find(x=>x.id===_activeTemplateId)?.subject || '');
+  const body = encodeURIComponent(document.getElementById('tmplPreview').value || '');
+  window.open(`https://mail.google.com/mail/u/0/?view=cm&su=${sub}&body=${body}`, '_blank');
+}
+
+// ── MISSING HANDLERS ────────────────────────────────────────
+function rejectPromo(pendingId, cardId) {
+  STATE.pendingPromos = (STATE.pendingPromos||[]).filter(x => x.id !== pendingId);
+  saveState();
+  updateQueueBadge();
+  const card = document.getElementById(cardId);
+  if (card) { const acts = card.querySelector('.card-actions'); if(acts) acts.innerHTML = '<span class="pill red">Rejected</span>'; }
+  toast('Promo rejected', 'warn');
+}
+
+function scanGmailThread() {
+  // Focus the thread URL input and scroll to it
+  switchTab('generate');
+  setTimeout(() => {
+    const input = document.getElementById('threadUrl');
+    if (input) { input.focus(); input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }, 100);
+}
+
+// ── COPY HELPERS ─────────────────────────────────────────────
+function copyWriteup(id) {
+  const text = document.getElementById('writeup-'+id)?.innerText || '';
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copybtn-'+id);
+    if (btn) { btn.textContent = '\u2713 Copied!'; btn.classList.add('copied'); setTimeout(()=>{btn.textContent='Copy Text';btn.classList.remove('copied');},2000); }
+  });
+}
+
+function copyImgToClip(id) {
+  const img = document.querySelector('#'+id+' img');
+  if (!img) return;
+  fetch(img.src).then(r=>r.blob()).then(blob=>{
+    navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(()=>toast('Image copied!')).catch(()=>toast('Use Download instead','warn'));
+  });
+}
+
+// ── ESCAPE HELPERS ───────────────────────────────────────────
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) {
+  if (!s) return '';
+  return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/\n/g,' ');
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+updateApiKeyUI();
+updateQueueBadge();
+if (STATE.currentUser) document.getElementById('currentUser').value = STATE.currentUser;
+renderDispatchSelect();
+
+// Restore calendar events if any
+if ((STATE.calendarEvents||[]).length) {
+  renderCalendarPage(STATE.calendarEvents);
+  renderCalendarPresets(STATE.calendarEvents);
+}
+
+</script>
+</body>
+</html>
